@@ -13,17 +13,17 @@
 int vecOutput[8] = {26, 21, 20, 16, 12, 25, 24, 23};
 
 //Declaracion de tablas de secuencias de luces
-unsigned int LaCarrera[] = {0x80, 0x80, 0x40, 0x40, 0x20, 0x20, 0x10, 0x10, 0x88, 0x48, 0x24, 0x14, 0x0A, 0x06, 0x03, 0x01, 0x00};
+unsigned char LaCarrera[] = {0x80, 0x80, 0x40, 0x40, 0x20, 0x20, 0x10, 0x10, 0x88, 0x48, 0x24, 0x14, 0x0A, 0x06, 0x03, 0x01, 0x00};
 
-unsigned int AutoFantastico[] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01, 0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x00};
+unsigned char AutoFantastico[] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01, 0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x00};
 
-unsigned int ElChoque[] = {0x81, 0x42, 0x24, 0x18, 0x00, 0x18, 0x24, 0x42, 0x81, 0x00};
+unsigned char ElChoque[] = {0x81, 0x42, 0x24, 0x18, 0x00, 0x18, 0x24, 0x42, 0x81, 0x00};
 
-unsigned int LaApilada[] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01, 0x81, 0x41, 0x21, 0x11, 0x9, 0x05, 0x03, 0x83, 0x43, 0x23, 0x13, 0x0B, 0x07, 0x87, 0x47, 0x27, 0x11, 0x0F,0x8F, 0x4F, 0x2f, 0x1F, 0x9F, 0x5F, 0x3F, 0xBF, 0x7F, 0xFF, 0x00};
+unsigned char LaApilada[] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01, 0x81, 0x41, 0x21, 0x11, 0x9, 0x05, 0x03, 0x83, 0x43, 0x23, 0x13, 0x0B, 0x07, 0x87, 0x47, 0x27, 0x11, 0x0F,0x8F, 0x4F, 0x2f, 0x1F, 0x9F, 0x5F, 0x3F, 0xBF, 0x7F, 0xFF, 0x00};
 
-unsigned int Voy2Vuelvo1[] = {0x80, 0x40, 0x20, 0x40, 0x20, 0x10, 0x20, 0x10, 0x08, 0x10, 0x08, 0x04, 0x08, 0x04, 0x02, 0x04, 0x02, 0x01, 0x02, 0x01, 0x00, 0x01, 0x00};
+unsigned char Voy2Vuelvo1[] = {0x80, 0x40, 0x20, 0x40, 0x20, 0x10, 0x20, 0x10, 0x08, 0x10, 0x08, 0x04, 0x08, 0x04, 0x02, 0x04, 0x02, 0x01, 0x02, 0x01, 0x00, 0x01, 0x00};
 
-unsigned int JuntosALaPar[] = {0x80, 0xC0, 0x60, 0x30, 0x18, 0x0C, 0x06, 0x03, 0x01, 0x00, 0x01, 0x03, 0x06, 0x0C, 0x18, 0x30, 0x60, 0xC0, 0x80, 0x00};
+unsigned char JuntosALaPar[] = {0x80, 0xC0, 0x60, 0x30, 0x18, 0x0C, 0x06, 0x03, 0x01, 0x00, 0x01, 0x03, 0x06, 0x0C, 0x18, 0x30, 0x60, 0xC0, 0x80, 0x00};
 
 int controlpassword(void);
 char printmenu(void);
@@ -53,9 +53,9 @@ int main(void){
   }
 
   pinMode(17, INPUT);
-  
+
   Despliegue();
-  
+
   return 0;
 }
 
@@ -68,12 +68,12 @@ void Despliegue()
   for(int i = 0; i < 8 ; i++){
     digitalWrite(vecOutput[i], 0);
   }
-  
+
   habilitacion = controlpassword();
-  
+
   if(habilitacion == 1){
       opcion = printSecuencia();
-      
+
       fflush(stdin);
 
       config0();
@@ -85,21 +85,21 @@ void Despliegue()
                   Secuencias(AutoFantastico, longitud, pausa);
                   break;
 
-	  case '2': longitud = sizeof(ElChoque)/sizeof(unsigned int);
+    case '2': longitud = sizeof(ElChoque)/sizeof(unsigned int);
                   puts("El Choque (Enter para Salir)");
-		  Secuencias(ElChoque, longitud, pausa);
+      Secuencias(ElChoque, longitud, pausa);
                   break;
-          
-	  case '3': longitud = sizeof(LaApilada)/sizeof(unsigned int);
+
+    case '3': longitud = sizeof(LaApilada)/sizeof(unsigned int);
                   puts("La Apilada (Enter para Salir)");
                   Secuencias(LaApilada, longitud, pausa);
                   break;
-          
-	  case '4': longitud = sizeof(LaCarrera)/sizeof(unsigned int);
+
+    case '4': longitud = sizeof(LaCarrera)/sizeof(unsigned int);
                   puts("La Carrera (Enter para Salir)");
-		  Secuencias(LaCarrera, longitud, pausa);
+      Secuencias(LaCarrera, longitud, pausa);
                   break;
-  
+
           case '5': longitud = sizeof(Voy2Vuelvo1)/sizeof(unsigned int);
                   puts("Voy2Vuelvo1 (Enter para Salir)");
                   Secuencias(Voy2Vuelvo1, longitud, pausa);
@@ -121,11 +121,11 @@ void Despliegue()
                   break;
 
           default:
-		  fprintf(stdout, "%d, no es una opcion valida", opcion);
-		  sleep(5);
+      fprintf(stdout, "%d, no es una opcion valida", opcion);
+      sleep(5);
                   break;
       }
-    
+
     tcsetattr (0 , TCSANOW , &old);
   }
 }
@@ -151,23 +151,25 @@ void waitms(void){
 void Secuencias(unsigned int *Secuencia, int length, float pausa)
 {       
         int mascara = 0;
-
+        unsigned char resultado, constante = 0x01;
         while(1){
             for(int j = 0 ; j < length ; j++){
               waitms();
               if(aux == '\n') //Enter
                 break;
-                  
+
               if(aux == 65) //Flecha hacia arriba
                 pausa -= 0.1;
-                  
+
               if(aux == 66) //Flecha hacia abajo
                 pausa += 0.1;
-              
+
               aux = 'E';
-              
+
               for(unsigned int offset=0;offset<8;offset++){
-                if(0x01 & (Secuencia[j] >> offset))
+                resultado = constante & Secuencia[j];
+                
+                if(resultado)
                   mascara = 1;
                 else
                   mascara = 0;
@@ -188,7 +190,7 @@ void Carga(float pausa)
       waitms();
       if(aux == '\n')
         break;
-      
+
       if(aux == 65) //Flecha hacia arriba
         pausa -= 0.1;
 
@@ -196,7 +198,7 @@ void Carga(float pausa)
         pausa += 0.1;
 
       aux = 'E';
-      
+
       digitalWrite(vecOutput[i], 1);
       sleep(pausa);
     }

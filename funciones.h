@@ -20,13 +20,22 @@ int key;
 // control de contraseña
 
 int controlpassword(void){
-  
+
     char contrasenaIngresada[LONGITUD_CONTRASENA + 1]; // +1 para el carácter nulo
     char caracter = 0;
     int intentos = 0;
 
-    system("clear");
+    // Terminal no bloqueante inicial
+    struct termios t_old, t_new;
+    tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
+    t_new = t_old;
+    t_new.c_lflag &= ~(ECHO | ICANON); // anula entrada canónica y eco
+    t_new.c_cc[VMIN] = 1;              // setea el minimo numero de caracteres que espera read()
+    t_new.c_cc[VTIME] = 0;             // setea tiempo maximo de espera de caracteres que lee read()
+    tcsetattr(FD_STDIN, TCSANOW, &t_new);
   
+    system("clear");
+
     while (intentos < MAX_INTENTOS) {
         int i = 0;
 
@@ -65,9 +74,9 @@ int controlpassword(void){
     if (intentos == MAX_INTENTOS) {
         printf("Demasiados intentos fallidos. El programa se aborta.\n");
     }
-  
+
     system("clear");
-  
+
     return 0; // Contraseña incorrecta o demasiados intentos
 }
 
@@ -101,9 +110,9 @@ char printmenu(void)
 char printSecuencia(void)
 {
     char opcion = 0;
- 
+
     system("clear");
- 
+
     puts("=========================================\n");
     puts("             Elegir secuencia \n");
     puts("=========================================\n");
@@ -119,7 +128,7 @@ char printSecuencia(void)
     opcion = getc(stdin);
 
     system("clear");
-  
+
     return opcion;
 }
 

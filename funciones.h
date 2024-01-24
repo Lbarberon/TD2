@@ -15,10 +15,11 @@
 #define MAX_VELOCIDAD 10
 #define BARRA_LONGITUD 2
 
+struct termios t_old, t_new;
+
 int key;
 
 // control de contraseña
-
 int controlpassword(void){
 
     char contrasenaIngresada[LONGITUD_CONTRASENA + 1]; // +1 para el carácter nulo
@@ -26,7 +27,6 @@ int controlpassword(void){
     int intentos = 0;
 
     // Terminal no bloqueante inicial
-    struct termios t_old, t_new;
     tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
     t_new = t_old;
     t_new.c_lflag &= ~(ECHO | ICANON); // anula entrada canónica y eco
@@ -76,7 +76,8 @@ int controlpassword(void){
     }
 
     system("clear");
-
+    tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
+    
     return 0; // Contraseña incorrecta o demasiados intentos
 }
 
@@ -110,7 +111,9 @@ char printmenu(void)
 char printSecuencia(void)
 {
     char opcion = 0;
-
+  
+    tcsetattr(FD_STDIN, TCSANOW, &t_new);
+  
     system("clear");
 
     puts("=========================================\n");
@@ -128,7 +131,8 @@ char printSecuencia(void)
     opcion = getc(stdin);
 
     system("clear");
-
+    tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
+    
     return opcion;
 }
 

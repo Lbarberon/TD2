@@ -30,7 +30,7 @@ char printmenu(void);
 char printSecuencia(void);
 int getKey(unsigned int );
 void barraVeloc(int );
-void Secuencias(unsigned int * , int , float );
+void Secuencias(unsigned char * , int , float );
 void Despliegue();
 void Carga(float);
 void VoyDosVuelvoUno(float);
@@ -38,6 +38,7 @@ void config0(void);		//Configura el modo de lectura de la funcion read
 void waitms(void);		//Genera un delay
 
 struct termios old, new;	//Estructuras termios para guardar las configuraciones del teclado
+
 char aux = 'E';
 
 int main(void){
@@ -85,19 +86,19 @@ void Despliegue()
                   Secuencias(AutoFantastico, longitud, pausa);
                   break;
 
-    case '2': longitud = sizeof(ElChoque)/sizeof(unsigned int);
+          case '2': longitud = sizeof(ElChoque)/sizeof(unsigned int);
                   puts("El Choque (Enter para Salir)");
-      Secuencias(ElChoque, longitud, pausa);
+                  Secuencias(ElChoque, longitud, pausa);
                   break;
 
-    case '3': longitud = sizeof(LaApilada)/sizeof(unsigned int);
+          case '3': longitud = sizeof(LaApilada)/sizeof(unsigned int);
                   puts("La Apilada (Enter para Salir)");
                   Secuencias(LaApilada, longitud, pausa);
                   break;
 
-    case '4': longitud = sizeof(LaCarrera)/sizeof(unsigned int);
+          case '4': longitud = sizeof(LaCarrera)/sizeof(unsigned int);
                   puts("La Carrera (Enter para Salir)");
-      Secuencias(LaCarrera, longitud, pausa);
+                  Secuencias(LaCarrera, longitud, pausa);
                   break;
 
           case '5': longitud = sizeof(Voy2Vuelvo1)/sizeof(unsigned int);
@@ -148,10 +149,12 @@ void waitms(void){
   }
 }
 
-void Secuencias(unsigned int *Secuencia, int length, float pausa)
+void Secuencias(unsigned char *Secuencia, int length, float pausa)
 {       
         int mascara = 0;
-        unsigned char resultado, constante = 0x01;
+        const unsigned char constante = 0x01;
+        unsigned char resultado = 0;
+  
         while(1){
             for(int j = 0 ; j < length ; j++){
               waitms();
@@ -167,12 +170,13 @@ void Secuencias(unsigned int *Secuencia, int length, float pausa)
               aux = 'E';
 
               for(unsigned int offset=0;offset<8;offset++){
-                resultado = constante & Secuencia[j];
+                resultado = constante & (*(Secuencia + j) >> offset);
                 
                 if(resultado)
                   mascara = 1;
                 else
                   mascara = 0;
+                
                 digitalWrite(vecOutput[offset], mascara);
               }
               sleep(pausa);

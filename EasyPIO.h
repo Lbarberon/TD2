@@ -1,15 +1,3 @@
-/*	EasyPIO.h
- *		Created: 		8 October 2013
- *						Sarah_Lichtman@hmc.edu & Joshua_Vasquez@hmc.edu
- *		Last Modified: 	5 April 2014
- *						Sarah_Lichtman@hmc.edu & Joshua_Vasquez@hmc.edu
- *                      15 August 2014
- *                      David_Harris@hmc.edu  (simplify pinMode)
- *						
- *	Library to simplify memory access on Raspberry Pi (Broadcom BCM2835). 
- *	Must be run with root permissions using sudo.
-*/
-
 #ifndef EASY_PIO_H
 #define EASY_PIO_H
 

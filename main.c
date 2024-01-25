@@ -1,4 +1,4 @@
-#include <wiringPi.h>
+#include "EasyPIO.h"
 #include <stdio.h>
 #include <termios.h>
 #include <string.h>

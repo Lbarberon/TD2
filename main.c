@@ -1,4 +1,4 @@
-#include "EasyPIO.h"
+#include <wiringPi.h>
 #include <stdio.h>
 #include <termios.h>
 #include <string.h>
@@ -10,7 +10,7 @@
 #define ADDRESS 0x48
 
 //Declaracion de pines de salida	
-int vecOutput[8] = {26, 21, 20, 16, 12, 25, 24, 23};
+int vecOutput[8] = {5, 6, 23, 24, 10, 11, 12, 14};
 
 //Declaracion de tablas de secuencias de luces
 unsigned char LaCarrera[] = {0x80, 0x80, 0x40, 0x40, 0x20, 0x20, 0x10, 0x10, 0x88, 0x48, 0x24, 0x14, 0x0A, 0x06, 0x03, 0x01, 0x00};
@@ -34,26 +34,21 @@ void Secuencias(unsigned char * , int , float );
 void Despliegue();
 void Carga(float);
 void VoyDosVuelvoUno(float);
-void config0(void);		//Configura el modo de lectura de la funcion read
 void waitms(void);		//Genera un delay
 
-struct termios old, new;	//Estructuras termios para guardar las configuraciones del teclado
+extern struct termios t_old, t_new;	//Estructuras termios para guardar las configuraciones del teclado
 
 char aux = 'E';
 
 int main(void){
 
-  if(wiringPiSetup() == -1){
-    fprintf(stdout, "No se puede iniciar wiringPi");
-    return 1;
-  }
+  if(wiringPiSetup() == -1)
+	  return 1;
 
   for(int i = 0 ; i < 8 ; i++){
     pinMode(vecOutput[i], OUTPUT);
     digitalWrite(vecOutput[i], 0);
   }
-
-  pinMode(17, INPUT);
 
   Despliegue();
 
@@ -64,11 +59,7 @@ void Despliegue()
 {
   int longitud, habilitacion = 0;
   char opcion = 0;
-  float pausa = 0.5;
-
-  for(int i = 0; i < 8 ; i++){
-    digitalWrite(vecOutput[i], 0);
-  }
+  float pausa = 1000;
 
   habilitacion = controlpassword();
 
@@ -77,36 +68,35 @@ void Despliegue()
 
       fflush(stdin);
 
-      config0();
-      aux = 'A';
+      aux = 'N';
 
       switch(opcion){
-          case '1': longitud = sizeof(AutoFantastico)/sizeof(unsigned int);
+          case '1': longitud = sizeof(AutoFantastico);
                   puts("Auto Fantastico (Enter para Salir)");
                   Secuencias(AutoFantastico, longitud, pausa);
                   break;
 
-          case '2': longitud = sizeof(ElChoque)/sizeof(unsigned int);
+          case '2': longitud = sizeof(ElChoque);
                   puts("El Choque (Enter para Salir)");
                   Secuencias(ElChoque, longitud, pausa);
                   break;
 
-          case '3': longitud = sizeof(LaApilada)/sizeof(unsigned int);
+          case '3': longitud = sizeof(LaApilada);
                   puts("La Apilada (Enter para Salir)");
                   Secuencias(LaApilada, longitud, pausa);
                   break;
 
-          case '4': longitud = sizeof(LaCarrera)/sizeof(unsigned int);
+          case '4': longitud = sizeof(LaCarrera);
                   puts("La Carrera (Enter para Salir)");
                   Secuencias(LaCarrera, longitud, pausa);
                   break;
 
-          case '5': longitud = sizeof(Voy2Vuelvo1)/sizeof(unsigned int);
+          case '5': longitud = sizeof(Voy2Vuelvo1);
                   puts("Voy2Vuelvo1 (Enter para Salir)");
                   Secuencias(Voy2Vuelvo1, longitud, pausa);
                   break;
 
-          case '6': longitud = sizeof(JuntosALaPar)/sizeof(unsigned int);
+          case '6': longitud = sizeof(JuntosALaPar);
                   puts("Juntos a la par (Enter para Salir)");
                   Secuencias(JuntosALaPar, longitud, pausa);
                   break;
@@ -126,18 +116,12 @@ void Despliegue()
       sleep(5);
                   break;
       }
+    
+    for(int i = 0; i < 8; i++)
+	    digitalWrite(vecOutput[i], 0);
 
-    tcsetattr (0 , TCSANOW , &old);
+    tcsetattr (0 , TCSANOW , &t_old);
   }
-}
-
-void config0(void){
-  tcgetattr(0,&old);
-  new = old;
-  new.c_lflag &= ~(ECHO | ICANON);	//elimina eco y configura modo no canonico
-  new.c_cc[VMIN]=0;			//setea el minimo numero de caracteres que espera read()
-  new.c_cc[VTIME] = 0;			//setea tiempo maximo de espera de caracteres que lee read()
-  tcsetattr(0,TCSANOW,&new);
 }
 
 void waitms(void){
@@ -149,16 +133,19 @@ void waitms(void){
   }
 }
 
-void Secuencias(unsigned char *Secuencia, int length, float pausa)
+void Secuencias(unsigned char *Secuencia, int longitud, float pausa)
 {       
-        int mascara = 0;
         const unsigned char constante = 0x01;
         unsigned char resultado = 0;
-  
-        while(1){
-            for(int j = 0 ; j < length ; j++){
-              waitms();
-              if(aux == '\n') //Enter
+	
+        //fprintf(stdout, "Longitud: %d", longitud);	
+        //tcsetattr (0 , TCSANOW , &t_new);
+       
+       	while(1){
+            for(int j = 0 ; j < longitud ; j++){
+    	     // read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
+              
+	      if(aux == '\n') //Enter
                 break;
 
               if(aux == 65) //Flecha hacia arriba
@@ -168,30 +155,29 @@ void Secuencias(unsigned char *Secuencia, int length, float pausa)
                 pausa += 0.1;
 
               aux = 'E';
+	      fprintf(stdout, "Secuencia: %x", Secuencia[j]);
+              for(int offset = 0 ; offset < 8 ; offset++){
+                resultado = constante & (Secuencia[j] >> offset);
 
-              for(unsigned int offset=0;offset<8;offset++){
-                resultado = constante & (*(Secuencia + j) >> offset);
-                
-                if(resultado)
-                  mascara = 1;
-                else
-                  mascara = 0;
-                
-                digitalWrite(vecOutput[offset], mascara);
+        	(resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
               }
-              sleep(pausa);
+        
+	      delay(pausa);
             }
-          if(aux == '\n')
-            break;
+        
+	    if(aux == '\n')
+              break;
       }
 }
 
 
 void Carga(float pausa)
 {
+  
+  //tcsetattr (0 , TCSANOW , &t_new);
   while(1){
     for(int i = 0; i < 8; i++){
-      waitms();
+    //  read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
       if(aux == '\n')
         break;
 
@@ -204,7 +190,7 @@ void Carga(float pausa)
       aux = 'E';
 
       digitalWrite(vecOutput[i], 1);
-      sleep(pausa);
+      delay(pausa);
     }
     for(int i =0; i < 8; i++){
       digitalWrite(vecOutput[i], 0);
@@ -218,13 +204,14 @@ void Carga(float pausa)
 
 void VoyDosVuelvoUno(float pausa)
 {
+  //tcsetattr (0 , TCSANOW , &t_new);
   while(1){
     digitalWrite(vecOutput[0], 1);
-    sleep(pausa);
+    delay(pausa);
     digitalWrite(vecOutput[0], 0);
 
     for(int i = 0; i < 8; i++){
-      waitms();
+    //  read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
       if(aux == '\n')
         break;
 
@@ -238,11 +225,11 @@ void VoyDosVuelvoUno(float pausa)
 
       if((i % 2) == 0){
         digitalWrite(vecOutput[i], 1);
-        sleep(pausa);
+        delay(pausa);
         digitalWrite(vecOutput[i], 0);
       }else{
         digitalWrite(vecOutput[i + 4], 1);
-        sleep(pausa);
+        delay(pausa);
         digitalWrite(vecOutput[i + 4], 0);
       }
     }

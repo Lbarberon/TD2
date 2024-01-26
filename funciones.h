@@ -76,7 +76,7 @@ int controlpassword(void){
     }
 
     system("clear");
-    tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
+    tcsetattr(FD_STDIN, TCSANOW, &t_old); // lee atributos del teclado
     
     return 0; // Contraseña incorrecta o demasiados intentos
 }
@@ -131,8 +131,7 @@ char printSecuencia(void)
     opcion = getc(stdin);
 
     system("clear");
-    tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
-    
+        
     return opcion;
 }
 

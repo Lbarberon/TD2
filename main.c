@@ -28,7 +28,7 @@ unsigned char JuntosALaPar[] = {0x80, 0xC0, 0x60, 0x30, 0x18, 0x0C, 0x06, 0x03, 
 int controlpassword(void);
 char printmenu(void);
 char printSecuencia(void);
-int getKey(unsigned int );
+int changePause(int );
 void barraVeloc(int );
 void Secuencias(unsigned char * , int , float );
 void Despliegue();

@@ -162,13 +162,14 @@ int barraVeloc(int pausa) {
     
     pausa = (resultado < MIN_VELOCIDAD) ? MIN_VELOCIDAD : (resultado > MAX_VELOCIDAD) ? MAX_VELOCIDAD : resultado;
     
-    fprintf(stdout, "Velocidad : \t\t\t");
+    for(int i = 0; i < BARRA_LONGITUD; i += 2)
+        fprintf(stdout, "\b");
     
     for (int i = 0; i < BARRA_LONGITUD; i += 2) {
         if (pausa >= (MIN_VELOCIDAD + i)) {
-            printf("▒");
+            fprintf(stdout, "▒");
         } else {
-            printf(" ");  // Espacio en blanco para borrar bloques anteriores
+            printf(stdout, " ");  // Espacio en blanco para borrar bloques anteriores
         }
     }
     

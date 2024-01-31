@@ -68,7 +68,8 @@ void Despliegue()
 
       fflush(stdin);
 
-      aux = 'N';
+      aux = 'E';
+      tcsetattr (0 , TCSANOW , &t_new);
 
       switch(opcion){
           case '1': longitud = sizeof(AutoFantastico);

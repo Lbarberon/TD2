@@ -18,7 +18,7 @@
 
 struct termios t_old, t_new;
 
-int key;
+extern int pausa;
 
 // control de contraseña
 int controlpassword(void){

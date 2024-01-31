@@ -19,6 +19,7 @@
 struct termios t_old, t_new;
 
 extern int pausa;
+extern char aux;
 
 // control de contraseña
 int controlpassword(void){
@@ -129,9 +130,10 @@ char printSecuencia(void)
     puts("(7)\t\t Carga");
     puts("(8)\t\t Brincos largos");
 
-    opcion = getc(stdin);
+    opcion = getchar();
 
     system("clear");
+    tcsetattr(FD_STDIN, TCSANOW, &t_old);
         
     return opcion;
 }
@@ -139,15 +141,15 @@ char printSecuencia(void)
 
 // changePause: Modifica la velocidad de las secuencias
 // Valor de retorno: Entero que representa la tecla interpretada (1: Flecha arriba, 2: Flecha abajo, 0: Otra tecla)
-int changePause()
+int changePause(void)
 {
     switch (aux)
     {
-        case 0x415b1b: // ARROW UP
-             return 1;
-
-        case 0x425b1b: // ARROW DOWN
+        case 'w': // ARROW UP
              return -1;
+
+        case 'a': // ARROW DOWN
+             return 1;
 
         default:
              return 0; // OTHER
@@ -161,18 +163,7 @@ int barraVeloc(int pausa) {
     resultado = pausa + modificacion;
     
     pausa = (resultado < MIN_VELOCIDAD) ? MIN_VELOCIDAD : (resultado > MAX_VELOCIDAD) ? MAX_VELOCIDAD : resultado;
-    
-    for(int i = 0; i < BARRA_LONGITUD; i += 2)
-        fprintf(stdout, "\b");
-    
-    for (int i = 0; i < BARRA_LONGITUD; i += 2) {
-        if (pausa >= (MIN_VELOCIDAD + i)) {
-            fprintf(stdout, "▒");
-        } else {
-            printf(stdout, " ");  // Espacio en blanco para borrar bloques anteriores
-        }
-    }
-    
+      
     return pausa;
 }
 

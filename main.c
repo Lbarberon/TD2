@@ -28,12 +28,12 @@ unsigned char JuntosALaPar[] = {0x80, 0xC0, 0x60, 0x30, 0x18, 0x0C, 0x06, 0x03, 
 int controlpassword(void);
 char printmenu(void);
 char printSecuencia(void);
-int changePause(int );
+int changePause(void);
 int barraVeloc(int );
-void Secuencias(unsigned char * , int , float );
+void Secuencias(unsigned char * , int , int );
 void Despliegue();
-void Carga(float);
-void VoyDosVuelvoUno(float);
+void Carga(int );
+void VoyDosVuelvoUno(int );
 void config0(void);
 void waitms(void);		//Genera un delay
 
@@ -60,7 +60,7 @@ void Despliegue()
 {
   int longitud, habilitacion = 0;
   char opcion = 0;
-  float pausa = 1000;
+  int pausa = 2;
 
   habilitacion = controlpassword();
 
@@ -74,53 +74,52 @@ void Despliegue()
 
       switch(opcion){
           case '1': longitud = sizeof(AutoFantastico);
-                  fprintf(stdout,"Auto Fantastico (Enter para Salir)");
+                  printf("Auto Fantastico (Enter para Salir)");
                   Secuencias(AutoFantastico, longitud, pausa);
                   break;
 
           case '2': longitud = sizeof(ElChoque);
-                  fprintf(stdout,"El Choque (Enter para Salir)");
+                  printf("El Choque (Enter para Salir)");
                   Secuencias(ElChoque, longitud, pausa);
                   break;
 
           case '3': longitud = sizeof(LaApilada);
-                  fprintf(stdout,"La Apilada (Enter para Salir)");
+                  printf("La Apilada (Enter para Salir)");
                   Secuencias(LaApilada, longitud, pausa);
                   break;
 
           case '4': longitud = sizeof(LaCarrera);
-                  fprintf(stdout,"La Carrera (Enter para Salir)");
+                  printf("La Carrera (Enter para Salir)");
                   Secuencias(LaCarrera, longitud, pausa);
                   break;
 
           case '5': longitud = sizeof(Voy2Vuelvo1);
-                  fprintf(stdout,"Voy2Vuelvo1 (Enter para Salir)");
+                  printf("Voy2Vuelvo1 (Enter para Salir)");
                   Secuencias(Voy2Vuelvo1, longitud, pausa);
                   break;
 
           case '6': longitud = sizeof(JuntosALaPar);
-                  fprintf(stdout,"Juntos a la par (Enter para Salir)");
+                  printf("Juntos a la par (Enter para Salir)");
                   Secuencias(JuntosALaPar, longitud, pausa);
                   break;
 
           case '7': 
-                  fprintf(stdout,"Carga (Enter para Salir)");
+                  printf("Carga (Enter para Salir)");
                   Carga(pausa);
                   break;
 
           case '8': 
-                  fprintf(stdout, "Brincos largos (Enter para Salir)");
-		  fprintf(stdout, "Velocidad: \t\t");
+                  printf("Brincos largos (Enter para Salir)");
                   VoyDosVuelvoUno(pausa);
                   break;
-
+      		  
           default:
-      		  fprintf(stdout, "%d, no es una opcion valida", opcion);
-      		  fprintf(stdout, "Velocidad: \t\t");	
+		  printf("%d no es una opcion valida", opcion);
 		  sleep(5);
                   break;
       }
     
+    printf("\n");
     for(int i = 0; i < 8; i++)
 	    digitalWrite(vecOutput[i], 0);
 
@@ -145,13 +144,11 @@ void waitms(void){
   }
 }
 
-void Secuencias(unsigned char *Secuencia, int longitud, float pausa)
+void Secuencias(unsigned char *Secuencia, int longitud, int pausa)
 {       
         const unsigned char constante = 0x01;
         unsigned char resultado = 0;
 	
-	fprintf(stdout,"Velocidad: \t\t");
-       	
 	while(1){
             for(int j = 0 ; j < longitud ; j++){
 	      waitms();
@@ -166,7 +163,7 @@ void Secuencias(unsigned char *Secuencia, int longitud, float pausa)
 
         	(resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
               }       
-	      delay(pausa);
+	      sleep(pausa);
             }
         
 	    if(aux == '\n')
@@ -174,7 +171,7 @@ void Secuencias(unsigned char *Secuencia, int longitud, float pausa)
       }
 }
 
-void Carga(float pausa)
+void Carga(int pausa)
 {
   while(1){
     for(int i = 0; i < 8; i++){
@@ -186,7 +183,7 @@ void Carga(float pausa)
       aux = 'E';
       
       digitalWrite(vecOutput[i], 1);
-      delay(pausa);
+      sleep(pausa);
     }
     
     for(int i =0; i < 8; i++){
@@ -198,11 +195,11 @@ void Carga(float pausa)
   }
 }
 
-void VoyDosVuelvoUno(float pausa)
+void VoyDosVuelvoUno(int pausa)
 {
    while(1){
     digitalWrite(vecOutput[0], 1);
-    delay(pausa);
+    sleep(pausa);
     digitalWrite(vecOutput[0], 0);
 
     for(int i = 0; i < 8; i++){
@@ -215,11 +212,11 @@ void VoyDosVuelvoUno(float pausa)
 	      
       if((i % 2) == 0){
         digitalWrite(vecOutput[i], 1);
-        delay(pausa);
+        sleep(pausa);
         digitalWrite(vecOutput[i], 0);
       }else{
         digitalWrite(vecOutput[i + 4], 1);
-        delay(pausa);
+        sleep(pausa);
         digitalWrite(vecOutput[i + 4], 0);
       }
     }

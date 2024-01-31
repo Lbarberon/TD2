@@ -28,17 +28,18 @@ unsigned char JuntosALaPar[] = {0x80, 0xC0, 0x60, 0x30, 0x18, 0x0C, 0x06, 0x03, 
 int controlpassword(void);
 char printmenu(void);
 char printSecuencia(void);
-int changePause(void);
-int barraVeloc(int );
+int cambiarPausa(void);
+int controlVeloc(int );
 void Secuencias(unsigned char * , int , int );
 void Despliegue();
 void Carga(int );
 void VoyDosVuelvoUno(int );
 void config0(void);
 void waitms(void);		//Genera un delay
+void lectura(void);
 
-extern struct termios t_old, t_new;	//Estructuras termios para guardar las configuraciones del teclado
-struct termios t_new1;
+extern struct termios t_old, t_new, t_new1;	//Estructuras termios para guardar las configuraciones del teclado
+
 char aux = 'E';
 
 int main(void){
@@ -70,7 +71,6 @@ void Despliegue()
       fflush(stdin);
 
       aux = 'E';
-      config0();
 
       switch(opcion){
           case '1': longitud = sizeof(AutoFantastico);
@@ -100,11 +100,13 @@ void Despliegue()
 
           case '6': longitud = sizeof(JuntosALaPar);
                   printf("Juntos a la par (Enter para Salir)");
+                  config0();
                   Secuencias(JuntosALaPar, longitud, pausa);
                   break;
 
           case '7': 
                   printf("Carga (Enter para Salir)");
+                  config0();
                   Carga(pausa);
                   break;
 
@@ -127,59 +129,43 @@ void Despliegue()
   }
 }
 
-void config0(void){
-	t_new1 = t_old;
-	t_new1.c_lflag &= ~(ECHO | ICANON);	//elimina eco y configura modo no canonico
-	t_new1.c_cc[VMIN]=0;			//setea el minimo numero de caracteres que espera read()
-	t_new1.c_cc[VTIME] = 0;			//setea tiempo maximo de espera de caracteres que lee read()
-	tcsetattr(0, TCSANOW, &t_new1);
-}
-
-void waitms(void){
-  int n = 0;
-  while(n<1000 && ((aux!='\n') | ((aux!= 0x425b1) | (aux != 0x415b1b)))){
-    read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
-    usleep(500);
-    n++;
-  }
-}
-
 void Secuencias(unsigned char *Secuencia, int longitud, int pausa)
 {       
         const unsigned char constante = 0x01;
         unsigned char resultado = 0;
-	
-	while(1){
-            for(int j = 0 ; j < longitud ; j++){
-	      waitms();
-	      if(aux == '\n') //Enter
-                break;
-		    
-	      pausa = barraVeloc(pausa);      
-	      aux = 'E';
-	      
-	      for(int offset = 0 ; offset < 8 ; offset++){
-                resultado = constante & (Secuencia[j] >> offset);
 
-        	(resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
-              }       
-	      sleep(pausa);
+        config0();
+	      while(1){
+            for(int j = 0 ; j < longitud ; j++){
+              pausa = controlVeloc(pausa);      
+
+              if(aux == '\n') //Enter
+                  break;
+
+              aux = 'E';
+	      
+	             for(int offset = 0 ; offset < 8 ; offset++){
+                  resultado = constante & (Secuencia[j] >> offset);
+
+        	        (resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
+               }       
+	             sleep(pausa);
             }
         
-	    if(aux == '\n')
+	         if(aux == '\n')
               break;
-      }
+        }
 }
 
 void Carga(int pausa)
 {
   while(1){
     for(int i = 0; i < 8; i++){
-      waitms();
+      pausa = controlVeloc(pausa);      
+
       if(aux == '\n') //Enter
           break;
-		    
-      pausa = barraVeloc(pausa);      
+
       aux = 'E';
       
       digitalWrite(vecOutput[i], 1);
@@ -203,11 +189,11 @@ void VoyDosVuelvoUno(int pausa)
     digitalWrite(vecOutput[0], 0);
 
     for(int i = 0; i < 8; i++){
-      waitms();
+      pausa = controlVeloc(pausa);      
+
       if(aux == '\n') //Enter
           break;
 		    
-      pausa = barraVeloc(pausa);      
       aux = 'E';
 	      
       if((i % 2) == 0){

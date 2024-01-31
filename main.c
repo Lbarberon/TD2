@@ -72,48 +72,50 @@ void Despliegue()
 
       switch(opcion){
           case '1': longitud = sizeof(AutoFantastico);
-                  puts("Auto Fantastico (Enter para Salir)");
+                  fprintf(stdout,"Auto Fantastico (Enter para Salir)");
                   Secuencias(AutoFantastico, longitud, pausa);
                   break;
 
           case '2': longitud = sizeof(ElChoque);
-                  puts("El Choque (Enter para Salir)");
+                  fprintf(stdout,"El Choque (Enter para Salir)");
                   Secuencias(ElChoque, longitud, pausa);
                   break;
 
           case '3': longitud = sizeof(LaApilada);
-                  puts("La Apilada (Enter para Salir)");
+                  fprintf(stdout,"La Apilada (Enter para Salir)");
                   Secuencias(LaApilada, longitud, pausa);
                   break;
 
           case '4': longitud = sizeof(LaCarrera);
-                  puts("La Carrera (Enter para Salir)");
+                  fprintf(stdout,"La Carrera (Enter para Salir)");
                   Secuencias(LaCarrera, longitud, pausa);
                   break;
 
           case '5': longitud = sizeof(Voy2Vuelvo1);
-                  puts("Voy2Vuelvo1 (Enter para Salir)");
+                  fprintf(stdout,"Voy2Vuelvo1 (Enter para Salir)");
                   Secuencias(Voy2Vuelvo1, longitud, pausa);
                   break;
 
           case '6': longitud = sizeof(JuntosALaPar);
-                  puts("Juntos a la par (Enter para Salir)");
+                  fprintf(stdout,"Juntos a la par (Enter para Salir)");
                   Secuencias(JuntosALaPar, longitud, pausa);
                   break;
 
           case '7': 
-                  puts("Carga (Enter para Salir)");
+                  fprintf(stdout,"Carga (Enter para Salir)");
                   Carga(pausa);
                   break;
 
           case '8': 
-                  puts("Brincos largos (Enter para Salir)");
+                  fprintf(stdout, "Brincos largos (Enter para Salir)");
+		  fprintf(stdout, "Velocidad: \t\t");
                   VoyDosVuelvoUno(pausa);
                   break;
 
           default:
       		  fprintf(stdout, "%d, no es una opcion valida", opcion);
-      		  sleep(5);
+      		  fprintf(stdout, "Velocidad: \t\t");	
+		  sleep(5);
                   break;
       }
     
@@ -126,9 +128,9 @@ void Despliegue()
 
 void waitms(void){
   int n = 0;
-  while(n<1000 && (aux!='\n')){
+  while(n<1000 && ((aux!='\n') | ((aux!= 0x425b1) | (aux != 0x415b1b)))){
     read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
-    usleep(1000);
+    usleep(500);
     n++;
   }
 }
@@ -138,13 +140,15 @@ void Secuencias(unsigned char *Secuencia, int longitud, float pausa)
         const unsigned char constante = 0x01;
         unsigned char resultado = 0;
 	
-       	while(1){
+	fprintf(stdout,"Velocidad: \t\t");
+       	
+	while(1){
             for(int j = 0 ; j < longitud ; j++){
-	      pausa = barraVeloc(pausa);      
-	      
+	      waitms();
 	      if(aux == '\n') //Enter
                 break;
-		
+		    
+	      pausa = barraVeloc(pausa);      
 	      aux = 'E';
 	      
 	      for(int offset = 0 ; offset < 8 ; offset++){
@@ -164,13 +168,13 @@ void Carga(float pausa)
 {
   while(1){
     for(int i = 0; i < 8; i++){
-      pausa = barraVeloc(pausa);
-      
-      if(aux == '\n')
-        break;
-
+      waitms();
+      if(aux == '\n') //Enter
+          break;
+		    
+      pausa = barraVeloc(pausa);      
       aux = 'E';
-
+      
       digitalWrite(vecOutput[i], 1);
       delay(pausa);
     }
@@ -192,13 +196,13 @@ void VoyDosVuelvoUno(float pausa)
     digitalWrite(vecOutput[0], 0);
 
     for(int i = 0; i < 8; i++){
-      pausa = barraVeloc(pausa);
-      
-      if(aux == '\n')
-        break;
-
+      waitms();
+      if(aux == '\n') //Enter
+          break;
+		    
+      pausa = barraVeloc(pausa);      
       aux = 'E';
-
+	      
       if((i % 2) == 0){
         digitalWrite(vecOutput[i], 1);
         delay(pausa);

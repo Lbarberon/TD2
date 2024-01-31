@@ -112,8 +112,8 @@ void Despliegue()
                   break;
 
           default:
-      fprintf(stdout, "%d, no es una opcion valida", opcion);
-      sleep(5);
+      		  fprintf(stdout, "%d, no es una opcion valida", opcion);
+      		  sleep(5);
                   break;
       }
     
@@ -138,30 +138,20 @@ void Secuencias(unsigned char *Secuencia, int longitud, float pausa)
         const unsigned char constante = 0x01;
         unsigned char resultado = 0;
 	
-        //fprintf(stdout, "Longitud: %d", longitud);	
-        //tcsetattr (0 , TCSANOW , &t_new);
-       
        	while(1){
             for(int j = 0 ; j < longitud ; j++){
-    	     // read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
-              
+	      pausa += changePause();      
+	      
 	      if(aux == '\n') //Enter
                 break;
-
-              if(aux == 65) //Flecha hacia arriba
-                pausa -= 0.1;
-
-              if(aux == 66) //Flecha hacia abajo
-                pausa += 0.1;
-
-              aux = 'E';
-	      fprintf(stdout, "Secuencia: %x", Secuencia[j]);
-              for(int offset = 0 ; offset < 8 ; offset++){
+		
+	      aux = 'E';
+	      
+	      for(int offset = 0 ; offset < 8 ; offset++){
                 resultado = constante & (Secuencia[j] >> offset);
 
         	(resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
-              }
-        
+              }       
 	      delay(pausa);
             }
         
@@ -170,56 +160,42 @@ void Secuencias(unsigned char *Secuencia, int longitud, float pausa)
       }
 }
 
-
 void Carga(float pausa)
 {
-  
-  //tcsetattr (0 , TCSANOW , &t_new);
   while(1){
     for(int i = 0; i < 8; i++){
-    //  read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
+      pausa += changePause();
+      
       if(aux == '\n')
         break;
-
-      if(aux == 65) //Flecha hacia arriba
-        pausa -= 0.1;
-
-      if(aux == 66) //Flecha hacia abajo
-        pausa += 0.1;
 
       aux = 'E';
 
       digitalWrite(vecOutput[i], 1);
       delay(pausa);
     }
+    
     for(int i =0; i < 8; i++){
       digitalWrite(vecOutput[i], 0);
     }
 
     if(aux == '\n')
       break;
-
   }
 }
 
 void VoyDosVuelvoUno(float pausa)
 {
-  //tcsetattr (0 , TCSANOW , &t_new);
-  while(1){
+   while(1){
     digitalWrite(vecOutput[0], 1);
     delay(pausa);
     digitalWrite(vecOutput[0], 0);
 
     for(int i = 0; i < 8; i++){
-    //  read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
+      pausa += changePause();
+      
       if(aux == '\n')
         break;
-
-      if(aux == 65) //Flecha hacia arriba
-        pausa -= 0.1;
-
-      if(aux == 66) //Flecha hacia abajo
-        pausa += 0.1;
 
       aux = 'E';
 
@@ -233,7 +209,8 @@ void VoyDosVuelvoUno(float pausa)
         digitalWrite(vecOutput[i + 4], 0);
       }
     }
-    if(aux == '\n')
+ 
+  if(aux == '\n')
       break;
   }
 }

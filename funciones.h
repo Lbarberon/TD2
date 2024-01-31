@@ -144,10 +144,10 @@ int changePause()
     switch (aux)
     {
         case 0x415b1b: // ARROW UP
-             return 10;
+             return 1;
 
         case 0x425b1b: // ARROW DOWN
-             return -10;
+             return -1;
 
         default:
              return 0; // OTHER

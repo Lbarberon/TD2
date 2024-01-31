@@ -140,7 +140,7 @@ void Secuencias(unsigned char *Secuencia, int longitud, float pausa)
 	
        	while(1){
             for(int j = 0 ; j < longitud ; j++){
-	      pausa = ();      
+	      pausa = barraVeloc(pausa);      
 	      
 	      if(aux == '\n') //Enter
                 break;
@@ -164,7 +164,7 @@ void Carga(float pausa)
 {
   while(1){
     for(int i = 0; i < 8; i++){
-      pausa += changePause();
+      pausa = barraVeloc(pausa);
       
       if(aux == '\n')
         break;
@@ -192,7 +192,7 @@ void VoyDosVuelvoUno(float pausa)
     digitalWrite(vecOutput[0], 0);
 
     for(int i = 0; i < 8; i++){
-      pausa += changePause();
+      pausa = barraVeloc(pausa);
       
       if(aux == '\n')
         break;

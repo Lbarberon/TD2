@@ -16,10 +16,27 @@
 #define MIN_VELOCIDAD 2
 #define BARRA_LONGITUD 5 
 
-struct termios t_old, t_new;
+struct termios t_old, t_new, t_new1;
 
 extern int pausa;
 extern char aux;
+
+void config0(void){
+  t_new1 = t_old;
+  t_new1.c_lflag &= ~(ECHO | ICANON);	//elimina eco y configura modo no canonico
+  t_new1.c_cc[VMIN]=0;			//setea el minimo numero de caracteres que espera read()
+  t_new1.c_cc[VTIME] = 0;			//setea tiempo maximo de espera de caracteres que lee read()
+  tcsetattr(0, TCSANOW, &t_new1);
+}
+
+void waitms(void){
+  int n = 0;
+  while(n<1000 && ((aux!='\n') | ((aux!= 0x425b1) | (aux != 0x415b1b)))){
+    read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
+    usleep(500);
+    n++;
+  }
+}
 
 // control de contraseña
 int controlpassword(void){
@@ -139,16 +156,15 @@ char printSecuencia(void)
 }
 
 
-// changePause: Modifica la velocidad de las secuencias
-// Valor de retorno: Entero que representa la tecla interpretada (1: Flecha arriba, 2: Flecha abajo, 0: Otra tecla)
-int changePause(void)
+// cambiarPausa: Modifica la velocidad de las secuencias
+int cambiarPausa(void)
 {
     switch (aux)
     {
-        case 'w': // ARROW UP
+        case 'A': // ARROW UP
              return -1;
 
-        case 'a': // ARROW DOWN
+        case 'B': // ARROW DOWN
              return 1;
 
         default:
@@ -156,15 +172,34 @@ int changePause(void)
     }
 }
 
-int barraVeloc(int pausa) {
+int controlVeloc(int pausa) {
     int modificacion, resultado;
-    
-    modificacion = changePause();
+
+    lectura();
+  
+    modificacion = cambiarPausa();
     resultado = pausa + modificacion;
     
     pausa = (resultado < MIN_VELOCIDAD) ? MIN_VELOCIDAD : (resultado > MAX_VELOCIDAD) ? MAX_VELOCIDAD : resultado;
       
     return pausa;
+}
+
+
+void lectura(void)
+{
+  char ingreso[3] = "aaa";
+
+  read(FD_STDIN, &ingreso, 3);
+
+  if(ingreso[0] == '\033')
+    if(ingreso[1] == '[')
+      if(ingreso[2] == 'A')
+        aux = 'A';
+      else if(ingreso[2] == 'B')
+        aux = 'B';
+  else if(ingreso[0] == '\n')
+        aux = '\n';
 }
 
 #endif

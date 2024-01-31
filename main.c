@@ -34,10 +34,11 @@ void Secuencias(unsigned char * , int , float );
 void Despliegue();
 void Carga(float);
 void VoyDosVuelvoUno(float);
+void config0(void);
 void waitms(void);		//Genera un delay
 
 extern struct termios t_old, t_new;	//Estructuras termios para guardar las configuraciones del teclado
-
+struct termios t_new1;
 char aux = 'E';
 
 int main(void){
@@ -69,7 +70,7 @@ void Despliegue()
       fflush(stdin);
 
       aux = 'E';
-      tcsetattr (0 , TCSANOW , &t_new);
+      config0();
 
       switch(opcion){
           case '1': longitud = sizeof(AutoFantastico);
@@ -125,6 +126,14 @@ void Despliegue()
 
     tcsetattr (0 , TCSANOW , &t_old);
   }
+}
+
+void config0(void){
+	t_new1 = t_old;
+	t_new1.c_lflag &= ~(ECHO | ICANON);	//elimina eco y configura modo no canonico
+	t_new1.c_cc[VMIN]=0;			//setea el minimo numero de caracteres que espera read()
+	t_new1.c_cc[VTIME] = 0;			//setea tiempo maximo de espera de caracteres que lee read()
+	tcsetattr(0, TCSANOW, &t_new1);
 }
 
 void waitms(void){

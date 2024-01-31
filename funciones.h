@@ -13,7 +13,8 @@
 #define LONGITUD_CONTRASENA 5
 #define CONTRASENA "12345"
 #define MAX_VELOCIDAD 10
-#define BARRA_LONGITUD 2
+#define MIN_VELOCIDAD 2
+#define BARRA_LONGITUD 5 
 
 struct termios t_old, t_new;
 
@@ -116,17 +117,17 @@ char printSecuencia(void)
   
     system("clear");
 
-    puts("=========================================\n");
-    puts("             Elegir secuencia \n");
-    puts("=========================================\n");
-    puts("(1) El Auto Fantástico");
-    puts("(2) El Choque");
-    puts("(3) La Apilada");
-    puts("(4) La Carrera");
-    puts("(5) Voy 2 vuelvo 1");
-    puts("(6) Juntos a la par");
-    puts("(7) Carga");
-    puts("(8) Brincos largos");
+    puts("-----------------------------------------\n");
+    puts("               SECUENCIAS \n");
+    puts("-----------------------------------------\n");
+    puts("(1)\t\t El Auto Fantastico");
+    puts("(2)\t\t El Choque");
+    puts("(3)\t\t La Apilada");
+    puts("(4)\t\t La Carrera");
+    puts("(5)\t\t Voy 2 vuelvo 1");
+    puts("(6)\t\t Juntos a la par");
+    puts("(7)\t\t Carga");
+    puts("(8)\t\t Brincos largos");
 
     opcion = getc(stdin);
 
@@ -136,43 +137,42 @@ char printSecuencia(void)
 }
 
 
-// getKey: Función para obtener la tecla presionada
-// Parámetros: key - valor de la tecla presionada
-// Valor de retorno: Entero que representa la tecla interpretada (1: Flecha arriba, 2: Flecha abajo, 3: Enter, 0: Otra tecla)
-int getKey(unsigned int key)
+// changePause: Modifica la velocidad de las secuencias
+// Valor de retorno: Entero que representa la tecla interpretada (1: Flecha arriba, 2: Flecha abajo, 0: Otra tecla)
+int changePause()
 {
-    switch (key)
+    switch (aux)
     {
-    case 0x415b1b: // ARROW UP
-        return 1;
+        case 0x415b1b: // ARROW UP
+             return 10;
 
-    case 0x425b1b: // ARROW DOWN
-        return 2;
+        case 0x425b1b: // ARROW DOWN
+             return -10;
 
-    default:
-        if ((key & 0x000000FF) == 0x0a) // ENTER
-            return 3;
-        else
-            return 0; // OTHER
+        default:
+             return 0; // OTHER
     }
 }
 
-
-
-
-void barraVeloc(int val) {
-    val = (val < 0) ? 0 : (val > MAX_VELOCIDAD) ? MAX_VELOCIDAD : val;
-    int bloques = (val * BARRA_LONGITUD) / MAX_VELOCIDAD;
-
-
-    for (int i = 0; i < BARRA_LONGITUD; i++) {
-        if (i < bloques) {
+int barraVeloc(int pausa) {
+    int modificacion, resultado;
+    
+    modificacion = changePause();
+    resultado = pausa + modificacion;
+    
+    pausa = (resultado < MIN_VELOCIDAD) ? MIN_VELOCIDAD : (resultado > MAX_VELOCIDAD) ? MAX_VELOCIDAD : resultado;
+    
+    fprintf(stdout, "Velocidad : \t\t\t");
+    
+    for (int i = 0; i < BARRA_LONGITUD; i += 2) {
+        if (pausa >= (MIN_VELOCIDAD + i)) {
             printf("▒");
         } else {
-            printf("  ");  // Espacio en blanco para borrar bloques anteriores
+            printf(" ");  // Espacio en blanco para borrar bloques anteriores
         }
     }
-
+    
+    return pausa;
 }
 
 #endif

@@ -29,7 +29,7 @@ int controlpassword(void);
 char printmenu(void);
 char printSecuencia(void);
 int changePause(int );
-void barraVeloc(int );
+int barraVeloc(int );
 void Secuencias(unsigned char * , int , float );
 void Despliegue();
 void Carga(float);
@@ -140,7 +140,7 @@ void Secuencias(unsigned char *Secuencia, int longitud, float pausa)
 	
        	while(1){
             for(int j = 0 ; j < longitud ; j++){
-	      pausa += changePause();      
+	      pausa = ();      
 	      
 	      if(aux == '\n') //Enter
                 break;

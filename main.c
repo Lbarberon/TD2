@@ -35,7 +35,6 @@ void Despliegue();
 void Carga(int );
 void VoyDosVuelvoUno(int );
 void config0(void);
-void waitms(void);		//Genera un delay
 void lectura(void);
 
 extern struct termios t_old, t_new, t_new1;	//Estructuras termios para guardar las configuraciones del teclado
@@ -112,6 +111,7 @@ void Despliegue()
 
           case '8': 
                   printf("Brincos largos (Enter para Salir)");
+		  config0();
                   VoyDosVuelvoUno(pausa);
                   break;
       		  
@@ -135,7 +135,7 @@ void Secuencias(unsigned char *Secuencia, int longitud, int pausa)
         unsigned char resultado = 0;
 
         config0();
-	      while(1){
+        while(1){
             for(int j = 0 ; j < longitud ; j++){
               pausa = controlVeloc(pausa);      
 

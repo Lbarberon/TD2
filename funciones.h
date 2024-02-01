@@ -13,8 +13,7 @@
 #define LONGITUD_CONTRASENA 5
 #define CONTRASENA "12345"
 #define MAX_VELOCIDAD 10
-#define MIN_VELOCIDAD 2
-#define BARRA_LONGITUD 5 
+#define MIN_VELOCIDAD 0 
 
 struct termios t_old, t_new, t_new1;
 
@@ -29,12 +28,27 @@ void config0(void){
   tcsetattr(0, TCSANOW, &t_new1);
 }
 
-void waitms(void){
+void lectura(void){
   int n = 0;
-  while(n<1000 && ((aux!='\n') | ((aux!= 0x425b1) | (aux != 0x415b1b)))){
-    read(0, &aux, 1);		// lectura de teclado recibe el fd del teclado.
-    usleep(500);
-    n++;
+  char ingreso[3] = "aaa";
+  
+  while(n<1000 && ((aux!='\n') | ((aux!= 'A') | (aux != 'B')))){
+	read(FD_STDIN, &ingreso, 3);
+
+  	if(ingreso[0] == 27){
+    		if(ingreso[1] == '['){
+      			if(ingreso[2] == 'A')
+        			aux = 'A';
+      			else if(ingreso[2] == 'B')
+        			aux = 'B';
+    		}
+  	}
+  	
+	if(ingreso[0] == '\n')
+        	aux = '\n';
+
+   	usleep(500);
+    	n++;
   }
 }
 
@@ -183,23 +197,6 @@ int controlVeloc(int pausa) {
     pausa = (resultado < MIN_VELOCIDAD) ? MIN_VELOCIDAD : (resultado > MAX_VELOCIDAD) ? MAX_VELOCIDAD : resultado;
       
     return pausa;
-}
-
-
-void lectura(void)
-{
-  char ingreso[3] = "aaa";
-
-  read(FD_STDIN, &ingreso, 3);
-
-  if(ingreso[0] == '\033')
-    if(ingreso[1] == '[')
-      if(ingreso[2] == 'A')
-        aux = 'A';
-      else if(ingreso[2] == 'B')
-        aux = 'B';
-  else if(ingreso[0] == '\n')
-        aux = '\n';
 }
 
 #endif

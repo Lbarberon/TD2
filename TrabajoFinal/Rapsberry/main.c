@@ -39,7 +39,6 @@ void Secuencias(int , unsigned char * , int , char);
 void Mod(int , char );
 void Carga(int , char);
 void VoyDosVuelvoUno(int , char );
-void testeoLeds(void);
 void apagarLeds(void);
 void config0(void);
 void lectura(void);
@@ -47,7 +46,7 @@ void lectura(void);
 extern void retardo(unsigned long int Op);
 
 int main(void){
-  char opcion, habilitacion;
+  char habilitacion, opcion = 'A';
   int fd;
 
   // Inicializa la configuracion de WiringPi
@@ -65,10 +64,11 @@ int main(void){
   
   habilitacion = controlpassword();
   
-  if(habilitacion == 'A'){
-    do{
+  if(habilitacion == 'A')
+    while(opcion != '5'){
+      system("clear");
       opcion = printMenu();
-    
+
       switch(opcion){
         case '1':
                 Mod(-1, 'L');
@@ -89,21 +89,30 @@ int main(void){
                 pausa = seteoVelocidad();  
                 break;
         case '4':
-                testeoLeds();
+    		for(int i = 0; i < 3; i++){
+      		  for(int j = 0; j < 8; j++)
+        		digitalWrite(vecOutput[j], 1);
+                  retardo(pausa*100000000);
+      
+      		  apagarLeds();
+                  retardo(pausa*100000000);
+                }
                 break;
+	case '5': break;
         default:
                 printf("Ingresar opcion valida");
                 break;
       } 
-    } while(opcion != 4);
-  }
+    }
+ 
   system("clear");
-  printf("El programa ha finalizado");
+  printf("\nEl programa ha finalizado\n");
+  tcsetattr (0 , TCSANOW , &t_old);
     
   return 0;
 }
 
-void Mod(fd, modo)
+void Mod(int fd, char modo)
 {
   int longitud;
   char opcion = 0;
@@ -116,7 +125,8 @@ void Mod(fd, modo)
         opcion = serialGetchar(fd);
     }      
     aux = 'E';
-
+   
+    tcsetattr (0 , TCSANOW , &t_old);
     switch(opcion){
       case '1': longitud = sizeof(AutoFantastico);
                 if(modo == 'L')
@@ -200,7 +210,7 @@ void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
 
                   (resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
                }       
-               retardo(pausa*100000);
+               retardo(pausa*1000000);
             }
             if(aux == '\n')
               break;
@@ -219,7 +229,7 @@ void Carga(int fd, char modo)
       aux = 'E';
 
       digitalWrite(vecOutput[i], 1);
-      retardo(pausa*100000);
+      retardo(pausa*1000000);
     }
     apagarLeds();
     
@@ -232,7 +242,7 @@ void VoyDosVuelvoUno(int fd, char modo)
 {
    while(1){
     digitalWrite(vecOutput[0], 1);
-    retardo(pausa*100000);
+    retardo(pausa*1000000);
     digitalWrite(vecOutput[0], 0);
 
     for(int i = 0; i < 8; i++){
@@ -245,38 +255,17 @@ void VoyDosVuelvoUno(int fd, char modo)
 
       if((i % 2) == 0){
         digitalWrite(vecOutput[i], 1);
-        retardo(pausa*100000);
+        retardo(pausa*1000000);
         digitalWrite(vecOutput[i], 0);
       }else{
         digitalWrite(vecOutput[i + 4], 1);
-        retardo(pausa*100000);
+        retardo(pausa*1000000);
         digitalWrite(vecOutput[i + 4], 0);
       }
     }
     if(aux == '\n')
         break;
     }
-}
-
-void testeoLeds(void)
-{
-  system("clear");
-  
-  printf("El testeo de los leds se esta ejecutando\nPreste atencion al correcto funcionamiento de los leds\nEn caso de falla termine la ejecucion del programa e intercambie el led defectuoso\n");
-  
-  do{
-    for(int i = 0; i < 3; i++){
-      for(int j = 0; j < 8; j++){
-        digitalWrite(vecOutput[j], 1);
-      }
-      retardo(2 * 1000000);
-      apagarLeds();
-    }
-    printf("El testeo de los leds ha finalizado\nPresione enter para regresar al Menu principal\nPresionar otra tecla repite el test\n");
-  
-  }while(getchar() != '\n');
-  
-  system("clear");
 }
 
 void apagarLeds(void)

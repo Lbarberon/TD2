@@ -21,10 +21,8 @@ extern int pausa;
 extern char aux;
 
 void config0(void){
-  t_new1 = t_old;
-  t_new1.c_lflag &= ~(ECHO | ICANON);	//elimina eco y configura modo no canonico
+  t_new1 = t_new;
   t_new1.c_cc[VMIN]=0;			//setea el minimo numero de caracteres que espera read()
-  t_new1.c_cc[VTIME] = 0;			//setea tiempo maximo de espera de caracteres que lee read()
   tcsetattr(0, TCSANOW, &t_new1);
 }
 
@@ -88,7 +86,10 @@ char controlpassword(void){
 // menu principal
 char printMenu(void)
 {
+    char choice;
     system("clear");
+    tcsetattr(FD_STDIN, TCSANOW, &t_new);
+    
     puts("-----------------------------------------\n");
     puts("          MENU PRINCIPAL\n");
     puts("-----------------------------------------\n");
@@ -98,31 +99,30 @@ char printMenu(void)
     puts("(4)\t\t Testeo de leds");
     puts("(5)\t\t Salir");
 
-    char choice;
-    do{
-        read(FD_STDIN, &choice, 1);
-        choice -= 48;
-    } while (choice < 1 || choice > 5);
+    read(FD_STDIN, &choice, 1);
     
     system("clear");
+    tcsetattr(FD_STDIN, TCSANOW, &t_old);
   
     return choice;
 }
 
 int seteoVelocidad(void){
-  int velocidad_inicial = 1;
-  unsigned int velocidad;
+  int valorADC, velocidad_inicial = 5;
+  unsigned int velocidad = 5;
 
   system("clear");
+  
+  tcsetattr(FD_STDIN, TCSANOW, &t_new);
   
   puts("-------------------------------------\n");
   puts("Seteo de velocidad de las secuencias\n");
   puts("-------------------------------------\n");
 
   while (aux != '\n'){
-      velocidad = analogRead(A0);
+      valorADC = analogRead(0);
 
-      if ((velocidad != delays) || velocidad_inicial){
+      if ((velocidad != pausa) || velocidad_inicial){
           system("clear");
           printf("\nVelocidad Inicial (Enter para setear)");
           velocidad = 1 + (valorADC * 9 / 255);
@@ -132,12 +132,12 @@ int seteoVelocidad(void){
       }
       read(FD_STDIN, &aux, 1);
   }
-  aux = 'E';
-  
-  system(clear);
-  
+  system("clear");
+  tcsetattr(FD_STDIN, TCSANOW, &t_old);
+
   return velocidad;
 }
+
 // menuSecuencia: Función para el menú de selección de secuencia
 // Valor de retorno: Entero que representa la opción elegida
 char printSecuencia(void)
@@ -200,11 +200,11 @@ void lecturaLocal(void){
               aux = 'B';
         }
     }
-  if(ingreso[0] == '\n')
+    if(ingreso[0] == '\n')
           aux = '\n';
 
     usleep(500);
-      n++;
+    n++;
   }
 }
   

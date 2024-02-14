@@ -20,10 +20,16 @@ struct termios t_old, t_new, t_new1;
 extern int pausa;
 extern char aux;
 
-void config0(void){ // Se utiliza para lectura no bloquante
-  t_new1 = t_new;
-  t_new1.c_cc[VMIN]=0;			//setea el minimo numero de caracteres que espera read()
-  tcsetattr(0, TCSANOW, &t_new1);
+void config0(void) // Obtiene configuraciones
+{ 
+  tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
+  t_new = t_old;               // t_new configura la entrada para controlpassword()
+  t_new.c_lflag &= ~(ECHO | ICANON); // anula entrada canónica y eco
+  t_new.c_cc[VMIN] = 1;              // setea el minimo numero de caracteres que espera read()
+  t_new.c_cc[VTIME] = 0;             // setea tiempo maximo de espera de caracteres que lee read()
+    
+  t_new1 = t_new;           // t_new1 configura la entrada no bloqueante  
+  t_new1.c_cc[VMIN]=0;			// setea el minimo numero de caracteres que espera read()
 }
 
 char controlpassword(void){ // control de contrasenia
@@ -31,14 +37,7 @@ char controlpassword(void){ // control de contrasenia
     char caracter = 0;
     int intentos = 0;
 
-    // Terminal no bloqueante inicial
-    tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
-    t_new = t_old;
-    t_new.c_lflag &= ~(ECHO | ICANON); // anula entrada canónica y eco
-    t_new.c_cc[VMIN] = 1;              // setea el minimo numero de caracteres que espera read()
-    t_new.c_cc[VTIME] = 0;             // setea tiempo maximo de espera de caracteres que lee read()
     tcsetattr(FD_STDIN, TCSANOW, &t_new);
-
     system("clear");
 
     while (intentos < MAX_INTENTOS) {

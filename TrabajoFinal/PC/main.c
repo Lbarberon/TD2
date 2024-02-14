@@ -31,6 +31,30 @@ int main(void) {
 
     while(opcion != '9'){ // opcion 9 es volver al menu principal
       opcion = printSecuencia();
+
+      switch(opcion){
+          case '1': printf("Auto Fantastico (Enter para Salir)");
+                    break;
+          case '2': printf("El Choque (Enter para Salir)");
+                    break;
+          case '3': printf("La Apilada (Enter para Salir)");
+                    break;
+          case '4': printf("La Carrera (Enter para Salir)");
+                    break;
+          case '5': printf("Voy2Vuelvo1 (Enter para Salir)");
+                    break;
+          case '6': printf("Juntos a la par (Enter para Salir)");
+                    break;
+          case '7': printf("Carga (Enter para Salir)");
+                    break;
+          case '8': printf("Brincos largos (Enter para Salir)");
+                    break;
+          case '9': break;
+          default:  printf("%d no es una opcion valida", opcion);
+                    sleep(3);
+                    break;
+      }
+      printf("\n");
       
       tcflush(fd, TCIOFLUSH);  // Limpieza del bufer de entrada/salida
       write(fd, &opcion, 1);   // envia opcion a Rapberry
@@ -48,8 +72,6 @@ int main(void) {
         
           sleep(1);
         }
-      else if(opcion != '9')
-        printf("Opcion no valida\n");
     }
     close(fd);
     

@@ -83,7 +83,7 @@ char controlpassword(void){ // control de contrasenia
 
 char printMenu(void) //Menu principal
 {
-    char choice;
+    char opcion;
     system("clear");
     tcsetattr(FD_STDIN, TCSANOW, &t_new);
     
@@ -96,20 +96,19 @@ char printMenu(void) //Menu principal
     puts("(4)\t\t Testeo de leds");
     puts("(5)\t\t Salir");
 
-    read(FD_STDIN, &choice, 1);
+    read(FD_STDIN, &opcion, 1);
     
     system("clear");
     tcsetattr(FD_STDIN, TCSANOW, &t_old);
   
-    return choice;
+    return opcion;
 }
 
 int seteoVelocidad(void){
-  int valorADC, velocidad_inicial = 5;
-  unsigned int velocidad = 5;
+  int velocidad_inicial = 5;
+  unsigned int velocidad, valorADC;
 
   system("clear");
-  
   tcsetattr(FD_STDIN, TCSANOW, &t_new);
   
   puts("-------------------------------------\n");
@@ -118,7 +117,6 @@ int seteoVelocidad(void){
 
   while (aux != '\n'){
       valorADC = analogRead(0);
-
       if ((velocidad != pausa) || velocidad_inicial){
           system("clear");
           printf("\nVelocidad Inicial (Enter para setear)");
@@ -161,8 +159,7 @@ char printSecuencia(void)
     return opcion;
 }
 
-// cambiarPausa: Modifica la velocidad de las secuencias
-int cambiarPausa(void)
+int cambiarPausa(void) // Modifica la velocidad de las secuencias
 {
     switch (aux)
     {
@@ -175,7 +172,7 @@ int cambiarPausa(void)
     }
 }
   
-void lecturaLocal(void){
+void lecturaLocal(void){ // Obtiene la tecla ingresada
   int n = 0;
   char ingreso[3] = "aaa";
 
@@ -184,13 +181,13 @@ void lecturaLocal(void){
 
     if(ingreso[0] == 27){
          if(ingreso[1] == '['){
-            if(ingreso[2] == 'A')
+            if(ingreso[2] == 'A') // Flecha ascendente
               aux = 'A';
-            else if(ingreso[2] == 'B')
+            else if(ingreso[2] == 'B') // Flecha descendente
               aux = 'B';
         }
     }
-    if(ingreso[0] == '\n')
+    if(ingreso[0] == '\n') // Enter
           aux = '\n';
 
     usleep(500);
@@ -198,7 +195,8 @@ void lecturaLocal(void){
   }
 }
   
-void controlVeloc(int fd, char modo) {
+void controlVeloc(int fd, char modo) // Obtiene el valor de pausa
+{
     int modificacion, resultado;
 
     if(modo == 'L')

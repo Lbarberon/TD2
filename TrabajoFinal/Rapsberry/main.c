@@ -46,7 +46,7 @@ void lectura(void);
 extern void retardo(unsigned long int Op);
 
 int main(void){
-  char habilitacion, opcion = 'A';
+  char opcion = 'A';
   int fd;
 
   // Inicializa la configuracion de WiringPi
@@ -54,57 +54,43 @@ int main(void){
     printf("No se puede iniciar WiringPi\n");
     return -1;
   }
-
   pcf8591Setup(BASE, Address);
   
   for(int i = 0 ; i < 8 ; i++){
     pinMode(vecOutput[i], OUTPUT);
     digitalWrite(vecOutput[i], 0);
   }
-  
-  habilitacion = controlpassword();
-  
-  if(habilitacion == 'A')
+  if(controlpassword() == 'A')
     while(opcion != '5'){
       system("clear");
       opcion = printMenu();
 
       switch(opcion){
-        case '1':
-                Mod(-1, 'L');
-                break;
-        case '2':
-                // Configuraciones
-                fd = serialOpen("/dev/ttyS0", 9600);
-
-                if(fd < 0) {
-                  printf("No se puede abrir el dispositivo serial\n");
-                  return 1;
-                }
-                Mod(fd, 'R');
-              
-                serialClose(fd);
-                break;
-        case '3':
-                pausa = seteoVelocidad();  
-                break;
-        case '4':
-    		for(int i = 0; i < 3; i++){
-      		  for(int j = 0; j < 8; j++)
+        case '1': Mod(-1, 'L');
+                  break;
+        case '2': fd = serialOpen("/dev/ttyS0", 9600); //configuracion de puerto serial
+                  if(fd < 0) {
+                    printf("No se puede abrir el dispositivo serial\n");
+                    return 1;
+                  }
+                  Mod(fd, 'R'); 
+                  serialClose(fd);
+                  break;
+        case '3': pausa = seteoVelocidad();  
+                  break;
+        case '4': for(int i = 0; i < 3; i++){
+      		    for(int j = 0; j < 8; j++)
         		digitalWrite(vecOutput[j], 1);
-                  retardo(pausa*100000000);
-      
-      		  apagarLeds();
-                  retardo(pausa*100000000);
-                }
-                break;
+                    retardo(pausa*100000000);
+                    apagarLeds();
+                    retardo(pausa*100000000);
+                  }
+                  break;
 	case '5': break;
-        default:
-                printf("Ingresar opcion valida");
-                break;
+        default:  printf("Ingresar opcion valida");
+                  break;
       } 
-    }
- 
+  }
   system("clear");
   printf("\nEl programa ha finalizado\n");
   tcsetattr (0 , TCSANOW , &t_old);
@@ -115,7 +101,7 @@ int main(void){
 void Mod(int fd, char modo)
 {
   int longitud;
-  char opcion = 0;
+  char opcion = 'A';
 
   while(opcion != '9'){
     if(modo == 'L')
@@ -125,8 +111,6 @@ void Mod(int fd, char modo)
         opcion = serialGetchar(fd);
     }      
     aux = 'E';
-   
-    tcsetattr (0 , TCSANOW , &t_old);
     switch(opcion){
       case '1': longitud = sizeof(AutoFantastico);
                 if(modo == 'L')
@@ -199,15 +183,12 @@ void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
         while(1){
             for(int j = 0 ; j < longitud ; j++){
               controlVeloc(fd, modo);      
-
               if(aux == '\n') //Enter
                   break;
-
               aux = 'E';
 
                for(int offset = 0 ; offset < 8 ; offset++){
                   resultado = constante & (Secuencia[j] >> offset);
-
                   (resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
                }       
                retardo(pausa*1000000);
@@ -222,17 +203,14 @@ void Carga(int fd, char modo)
   while(1){
     for(int i = 0; i < 8; i++){
       controlVeloc(fd, modo);      
-
       if(aux == '\n') //Enter
           break;
-
       aux = 'E';
 
       digitalWrite(vecOutput[i], 1);
       retardo(pausa*1000000);
     }
     apagarLeds();
-    
     if(aux == '\n')
       break;
   }
@@ -247,10 +225,8 @@ void VoyDosVuelvoUno(int fd, char modo)
 
     for(int i = 0; i < 8; i++){
       controlVeloc(fd, modo);      
-
       if(aux == '\n') //Enter
           break;
-
       aux = 'E';
 
       if((i % 2) == 0){

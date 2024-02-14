@@ -55,7 +55,9 @@ int main(void){
     return -1;
   }
   pcf8591Setup(BASE, Address);
-  
+
+  config0(); // Obtenemos las configuraciones de teclado
+	
   for(int i = 0 ; i < 8 ; i++){
     pinMode(vecOutput[i], OUTPUT);
     digitalWrite(vecOutput[i], 0);
@@ -150,13 +152,13 @@ void Mod(int fd, char modo)
 
       case '7': if(modo == 'L')
                   printf("Carga (Enter para Salir)");
-                config0();
+                tcsetattr(FD_STDIN, TCSANOW, &t_new1);
                 Carga(fd, modo);
                 break;
 
       case '8': if(modo == 'L')
                   printf("Brincos largos (Enter para Salir)");
-                config0();
+                tcsetattr(FD_STDIN, TCSANOW, &t_new1);
                 VoyDosVuelvoUno(fd, modo);
                 break;
       
@@ -179,7 +181,7 @@ void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
         const unsigned char constante = 0x01;
         unsigned char resultado = 0;
 
-        config0();
+        tcsetattr(FD_STDIN, TCSANOW, &t_new1);
         while(1){
             for(int j = 0 ; j < longitud ; j++){
               controlVeloc(fd, modo);      

@@ -1,0 +1,25 @@
+El proyecto consiste de 2 programas que establecen una comunicacion serial  --> Rapsberry(principal)
+                                                                            --> PC
+
+-En las carpetas se encuentran los siguientes archivos:
+
+Rapsberry/main.c                 --> programa de rapsberry
+PC/main.c                        --> programa de PC
+funciones.h                      --> funciones utilizadas tanto en rapsberry como en PC
+retardo.s                        --> funcion en asembler (consigna H)
+PC/termset.h                     --> configura transmision de datos de PC a la rapsberry
+PC/termset.c                     --> funcion de termset.h
+Rapsberry/termios.h              --> configura la entrada y salida de datos en rapsberry, se la usa para lecturas no bloqueantes y para la configuracion de controlPassword 
+
+-Siguiendo las consignas planteadas por la catedra:
+
+Puntos funcionando               --> A, B, C, D, E, G, F y H
+
+Plus                             --> Makefile             --> PC (HECHO)
+                                                          --> Rapsberry (HECHO)
+                                                          
+                                 --> Test de leds inicial --> Menu principal (HECHO)
+
+-ATENCION:
+
+Cambiar 2 leds del circuito

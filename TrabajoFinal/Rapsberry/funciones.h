@@ -20,14 +20,13 @@ struct termios t_old, t_new, t_new1;
 extern int pausa;
 extern char aux;
 
-void config0(void){
+void config0(void){ // Se utiliza para lectura no bloquante
   t_new1 = t_new;
   t_new1.c_cc[VMIN]=0;			//setea el minimo numero de caracteres que espera read()
   tcsetattr(0, TCSANOW, &t_new1);
 }
 
-// control de contraseña
-char controlpassword(void){
+char controlpassword(void){ // control de contrasenia
     char contrasenaIngresada[LONGITUD_CONTRASENA + 1]; // +1 para el carácter nulo
     char caracter = 0;
     int intentos = 0;
@@ -44,7 +43,6 @@ char controlpassword(void){
 
     while (intentos < MAX_INTENTOS) {
         int i = 0;
-
         printf("\nPassword: ");
 
         while (caracter != 10) { // Mientras no se presione ENTER
@@ -83,8 +81,7 @@ char controlpassword(void){
     return 'D'; // Contraseña incorrecta o demasiados intentos
 }
 
-// menu principal
-char printMenu(void)
+char printMenu(void) //Menu principal
 {
     char choice;
     system("clear");
@@ -138,14 +135,10 @@ int seteoVelocidad(void){
   return velocidad;
 }
 
-// menuSecuencia: Función para el menú de selección de secuencia
-// Valor de retorno: Entero que representa la opción elegida
 char printSecuencia(void)
 {
-    char opcion = 0;
-
+    char opcion = 'A';
     tcsetattr(FD_STDIN, TCSANOW, &t_new);
-
     system("clear");
 
     puts("-----------------------------------------\n");
@@ -161,8 +154,7 @@ char printSecuencia(void)
     puts("(8)\t\t Brincos largos");
     puts("(9)\t\t Volver a menu principal");
   
-    opcion = getchar();
-
+    read(FD_STDIN, &opcion, 1);
     system("clear");
     tcsetattr(FD_STDIN, TCSANOW, &t_old);
 
@@ -176,10 +168,8 @@ int cambiarPausa(void)
     {
         case 'A': // ARROW UP
              return -1;
-
         case 'B': // ARROW DOWN
              return 1;
-
         default:
              return 0; // OTHER
     }

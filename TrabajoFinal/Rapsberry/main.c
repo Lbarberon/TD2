@@ -16,7 +16,7 @@
 char aux = 'E';
 int pausa = 5;
 
-//Declaracion de pines de salida	
+//Declaracion de pines de salida -- Modificar a los pines de placa	
 int vecOutput[8] = {5, 6, 23, 24, 10, 11, 12, 14};
 
 //Declaracion de tablas de secuencias de luces
@@ -57,7 +57,7 @@ int main(void){
   pcf8591Setup(BASE, Address);
 
   config0(); // Obtenemos las configuraciones de teclado
-	
+
   for(int i = 0 ; i < 8 ; i++){
     pinMode(vecOutput[i], OUTPUT);
     digitalWrite(vecOutput[i], 0);
@@ -81,14 +81,14 @@ int main(void){
         case '3': pausa = seteoVelocidad();  
                   break;
         case '4': for(int i = 0; i < 3; i++){
-      		    for(int j = 0; j < 8; j++)
-        		digitalWrite(vecOutput[j], 1);
+              for(int j = 0; j < 8; j++)
+            digitalWrite(vecOutput[j], 1);
                     retardo(pausa*100000000);
                     apagarLeds();
                     retardo(pausa*100000000);
                   }
                   break;
-	case '5': break;
+  case '5': break;
         default:  printf("Ingresar opcion valida");
                   break;
       } 
@@ -96,7 +96,7 @@ int main(void){
   system("clear");
   printf("\nEl programa ha finalizado\n");
   tcsetattr (0 , TCSANOW , &t_old);
-    
+
   return 0;
 }
 
@@ -161,9 +161,9 @@ void Mod(int fd, char modo)
                 tcsetattr(FD_STDIN, TCSANOW, &t_new1);
                 VoyDosVuelvoUno(fd, modo);
                 break;
-      
+
       case '9': break;
-      
+
       default:  if(modo == 'L')
                   printf("%d no es una opcion valida", opcion);
                 retardo(pausa*100000);
@@ -171,35 +171,35 @@ void Mod(int fd, char modo)
     }
     printf("\n");
     apagarLeds();
-    
+
     tcsetattr (0 , TCSANOW , &t_old);
   }
 }
 
-void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
-{       
-        const unsigned char constante = 0x01;
-        unsigned char resultado = 0;
-
-        tcsetattr(FD_STDIN, TCSANOW, &t_new1);
-        while(1){
-            for(int j = 0 ; j < longitud ; j++){
-              controlVeloc(fd, modo);      
-              if(aux == '\n') //Enter
-                  break;
-              aux = 'E';
-
-               for(int offset = 0 ; offset < 8 ; offset++){
-                  resultado = constante & (Secuencia[j] >> offset);
-                  (resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
-               }       
-               retardo(pausa*1000000);
-            }
-            if(aux == '\n')
-              break;
-        }
-}
-
+  void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
+  {       
+          const unsigned char constante = 0x01;
+          unsigned char resultado = 0;
+  
+          tcsetattr(FD_STDIN, TCSANOW, &t_new1);
+          while(1){
+              for(int j = 0 ; j < longitud ; j++){
+                controlVeloc(fd, modo);      
+                if(aux == '\n') //Enter
+                    break;
+                aux = 'E';
+  
+                 for(int offset = 0 ; offset < 8 ; offset++){
+                    resultado = constante & (Secuencia[j] >> offset);
+                    (resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
+                 }       
+                 retardo(pausa*1000000);
+              }
+              if(aux == '\n')
+                break;
+          }
+  }
+  
 void Carga(int fd, char modo)
 {
   while(1){

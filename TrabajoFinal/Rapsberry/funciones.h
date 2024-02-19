@@ -27,7 +27,7 @@ void config0(void) // Obtiene configuraciones
   t_new.c_lflag &= ~(ECHO | ICANON); // anula entrada canónica y eco
   t_new.c_cc[VMIN] = 1;              // setea el minimo numero de caracteres que espera read()
   t_new.c_cc[VTIME] = 0;             // setea tiempo maximo de espera de caracteres que lee read()
-    
+
   t_new1 = t_new;           // t_new1 configura la entrada no bloqueante  
   t_new1.c_cc[VMIN]=0;			// setea el minimo numero de caracteres que espera read()
 }
@@ -85,7 +85,7 @@ char printMenu(void) //Menu principal
     char opcion;
     system("clear");
     tcsetattr(FD_STDIN, TCSANOW, &t_new);
-    
+
     puts("-----------------------------------------\n");
     puts("          MENU PRINCIPAL\n");
     puts("-----------------------------------------\n");
@@ -96,10 +96,10 @@ char printMenu(void) //Menu principal
     puts("(5)\t\t Salir");
 
     read(FD_STDIN, &opcion, 1);
-    
+
     system("clear");
     tcsetattr(FD_STDIN, TCSANOW, &t_old);
-  
+
     return opcion;
 }
 
@@ -109,7 +109,7 @@ int seteoVelocidad(void){
 
   system("clear");
   tcsetattr(FD_STDIN, TCSANOW, &t_new);
-  
+
   puts("-------------------------------------\n");
   puts("Seteo de velocidad de las secuencias\n");
   puts("-------------------------------------\n");
@@ -120,7 +120,7 @@ int seteoVelocidad(void){
           system("clear");
           printf("\nVelocidad Inicial (Enter para setear)");
           velocidad = 1 + (valorADC * 9 / 255);
-          
+
           printf("\nVelocidad Inicial: %d ms\n", velocidad);
           velocidad_inicial = 0;
       }
@@ -150,7 +150,7 @@ char printSecuencia(void)
     puts("(7)\t\t Carga");
     puts("(8)\t\t Brincos largos");
     puts("(9)\t\t Volver a menu principal");
-  
+
     read(FD_STDIN, &opcion, 1);
     system("clear");
     tcsetattr(FD_STDIN, TCSANOW, &t_old);
@@ -170,7 +170,7 @@ int cambiarPausa(void) // Modifica la velocidad de las secuencias
              return 0; // OTHER
     }
 }
-  
+
 void lecturaLocal(void){ // Obtiene la tecla ingresada
   int n = 0;
   char ingreso[3] = "aaa";
@@ -193,7 +193,7 @@ void lecturaLocal(void){ // Obtiene la tecla ingresada
     n++;
   }
 }
-  
+
 void controlVeloc(int fd, char modo) // Obtiene el valor de pausa
 {
     int modificacion, resultado;

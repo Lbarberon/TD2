@@ -15,7 +15,7 @@ int main(void) {
     int fd;
     struct termios oldtty, newtty;
     char opcion;
-  
+
     // Apertura del puerto serie
     fd = open("/dev/ttyUSB0", O_RDWR | O_NOCTTY | O_NDELAY);
     if (fd == -1) {
@@ -55,25 +55,25 @@ int main(void) {
                     break;
       }
       printf("\n");
-      
+
       tcflush(fd, TCIOFLUSH);  // Limpieza del bufer de entrada/salida
       write(fd, &opcion, 1);   // envia opcion a Rapberry
       tcdrain(fd);   // Espera hasta que se haya transmitido toda la salida escrita
-      
+
       if((opcion >= 1) && (opcion < 9))
         while(aux != '\n'){ // enter finaliza la secuencia elegida
           aux = 'E'; // actualiza el valor de aux para un correcto funcionamiento de la funcion lecturaLocal
-        
+
           lecturaLocal();  //actualiza el valor de aux segun las teclas presionadas(flechas y enter)
-          
+
           tcflush(fd, TCIOFLUSH);
           write(fd, &aux, 1); // envia aux a Rapberry
           tcdrain(fd);  
-        
+
           sleep(1);
         }
     }
     close(fd);
-    
+
     return 0;
 }

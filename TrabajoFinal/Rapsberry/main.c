@@ -81,14 +81,14 @@ int main(void){
         case '3': pausa = seteoVelocidad();  
                   break;
         case '4': for(int i = 0; i < 3; i++){
-              for(int j = 0; j < 8; j++)
-            digitalWrite(vecOutput[j], 1);
+                    for(int j = 0; j < 8; j++)
+            		digitalWrite(vecOutput[j], 1);
                     retardo(pausa*100000000);
                     apagarLeds();
                     retardo(pausa*100000000);
                   }
                   break;
-  case '5': break;
+  	case '5': break;
         default:  printf("Ingresar opcion valida");
                   break;
       } 
@@ -113,71 +113,74 @@ void Mod(int fd, char modo)
         opcion = serialGetchar(fd);
     }      
     aux = 'E';
+
+    tcsetattr (0 , TCSANOW , &t_new);
+
     switch(opcion){
       case '1': longitud = sizeof(AutoFantastico);
-                if(modo == 'L')
-                  printf("Auto Fantastico (Enter para Salir)");
-                Secuencias(fd, AutoFantastico, longitud, modo);
+                printf("Auto Fantastico (Enter para Salir)");
+                fflush(stdout);
+		Secuencias(fd, AutoFantastico, longitud, modo);
                 break;
 
       case '2': longitud = sizeof(ElChoque);
-                if(modo == 'L')
-                  printf("El Choque (Enter para Salir)");
+                printf("El Choque (Enter para Salir)");
+                fflush(stdout);
                 Secuencias(fd, ElChoque, longitud, modo);
                 break;
 
       case '3': longitud = sizeof(LaApilada);
-                if(modo == 'L')
-                  printf("La Apilada (Enter para Salir)");
+                fflush(stdout);
+                printf("La Apilada (Enter para Salir)");
                 Secuencias(fd, LaApilada, longitud, modo);
                 break;
 
       case '4': longitud = sizeof(LaCarrera);
-                if(modo == 'L')
-                  printf("La Carrera (Enter para Salir)");
+                printf("La Carrera (Enter para Salir)");
+                fflush(stdout);
                 Secuencias(fd, LaCarrera, longitud, modo);
                 break;
 
       case '5': longitud = sizeof(Voy2Vuelvo1);
-                if(modo == 'L')
-                  printf("Voy2Vuelvo1 (Enter para Salir)");
+                printf("Voy2Vuelvo1 (Enter para Salir)");
+                fflush(stdout);
                 Secuencias(fd, Voy2Vuelvo1, longitud, modo);
                 break;
 
       case '6': longitud = sizeof(JuntosALaPar);
-                if(modo == 'L')
-                  printf("Juntos a la par (Enter para Salir)");
+                printf("Juntos a la par (Enter para Salir)");
+                fflush(stdout);
                 Secuencias(fd, JuntosALaPar, longitud, modo);
                 break;
 
-      case '7': if(modo == 'L')
-                  printf("Carga (Enter para Salir)");
+      case '7': printf("Carga (Enter para Salir)");
+                fflush(stdout);
                 tcsetattr(FD_STDIN, TCSANOW, &t_new1);
                 Carga(fd, modo);
                 break;
 
-      case '8': if(modo == 'L')
-                  printf("Brincos largos (Enter para Salir)");
+      case '8': printf("Brincos largos (Enter para Salir)");
+                fflush(stdout);
                 tcsetattr(FD_STDIN, TCSANOW, &t_new1);
                 VoyDosVuelvoUno(fd, modo);
                 break;
 
       case '9': break;
 
-      default:  if(modo == 'L')
-                  printf("%d no es una opcion valida", opcion);
+      default:  printf("%d no es una opcion valida", opcion);
+                fflush(stdout);
                 retardo(pausa*100000);
                 break;
     }
     printf("\n");
     apagarLeds();
 
-    tcsetattr (0 , TCSANOW , &t_old);
+    tcsetattr(0 , TCSANOW , &t_old);
   }
 }
 
-  void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
-  {       
+void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
+{       
           const unsigned char constante = 0x01;
           unsigned char resultado = 0;
   
@@ -198,7 +201,7 @@ void Mod(int fd, char modo)
               if(aux == '\n')
                 break;
           }
-  }
+}
   
 void Carga(int fd, char modo)
 {

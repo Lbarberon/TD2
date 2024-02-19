@@ -12,7 +12,7 @@
 #define MAX_INTENTOS 3
 #define LONGITUD_CONTRASENA 5
 #define CONTRASENA "12345"
-#define MAX_VELOCIDAD 10
+#define MAX_VELOCIDAD 1000
 #define MIN_VELOCIDAD 0 
 
 struct termios t_old, t_new, t_new1;
@@ -163,9 +163,9 @@ int cambiarPausa(void) // Modifica la velocidad de las secuencias
     switch (aux)
     {
         case 'A': // ARROW UP
-             return -1;
+             return -100;
         case 'B': // ARROW DOWN
-             return 1;
+             return 100;
         default:
              return 0; // OTHER
     }

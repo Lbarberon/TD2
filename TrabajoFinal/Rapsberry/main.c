@@ -11,13 +11,13 @@
 #define AD_BASE 120
 #define Address 0x48
 #define BASE 64
-#define A0 BASE+0
+#define A0 BASE + 0
 
 char aux = 'E';
 int pausa = 5;
 
 //Declaracion de pines de salida -- Modificar a los pines de placa	
-int vecOutput[8] = {5, 6, 23, 24, 10, 11, 12, 14};
+int vecOutput[8] = {4, 5, 6, 26,  27, 28, 29, 25};
 
 //Declaracion de tablas de secuencias de luces
 unsigned char LaCarrera[] = {0x80, 0x80, 0x40, 0x40, 0x20, 0x20, 0x10, 0x10, 0x88, 0x48, 0x24, 0x14, 0x0A, 0x06, 0x03, 0x01, 0x00};
@@ -81,11 +81,13 @@ int main(void){
         case '3': pausa = seteoVelocidad();  
                   break;
         case '4': for(int i = 0; i < 3; i++){
-                    for(int j = 0; j < 8; j++)
-            		digitalWrite(vecOutput[j], 1);
+                    for(int j = 0;j< 8; j++)
+                      digitalWrite(vecOutput[j], 1);
+                    
                     retardo(pausa*100000000);
                     apagarLeds();
                     retardo(pausa*100000000);
+                    
                   }
                   break;
   	case '5': break;
@@ -109,8 +111,10 @@ void Mod(int fd, char modo)
     if(modo == 'L')
       opcion = printSecuencia();
     else if(modo == 'R'){
-      if(serialDataAvail(fd))
-        opcion = serialGetchar(fd);
+      while(opcion == 'A'){
+        if(serialDataAvail(fd))
+          opcion = serialGetchar(fd);
+        }
     }      
     aux = 'E';
 

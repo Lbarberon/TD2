@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <wiringPi.h>
+#include <wiringSerial.h>
 #include <termios.h>
 
 #ifndef _FUNCIONES
@@ -13,23 +15,129 @@
 #define MAX_VELOCIDAD 10
 #define MIN_VELOCIDAD 0 
 
-extern struct termios t_old, t_new, t_new1;
+struct termios t_old, t_new, t_new1;
 
 extern int pausa;
 extern char aux;
 
 void config0(void){
-	tcgetattr(FD_STDIN, &t_old);
-	t_new = t_old;
-	t_new.c_lflag &= ~(ECHO | ICANON);	//elimina eco y configura modo no canonico
-	t_new.c_cc[VMIN]=1;			//setea el minimo numero de caracteres que espera read()
-	t_new.c_cc[VTIME] = 0;			//setea tiempo maximo de espera de caracteres que lee read()
-	
-	t_new1 = t_new;
-	t_new.c_cc[VMIN]=0;
+  t_new1 = t_old;
+  t_new1.c_lflag &= ~(ECHO | ICANON);	//elimina eco y configura modo no canonico
+  t_new1.c_cc[VMIN]=0;			//setea el minimo numero de caracteres que espera read()
+  t_new1.c_cc[VTIME] = 0;			//setea tiempo maximo de espera de caracteres que lee read()
+  tcsetattr(0, TCSANOW, &t_new1);
 }
-	
 
+// control de contraseña
+char controlpassword(void){
+    char contrasenaIngresada[LONGITUD_CONTRASENA + 1]; // +1 para el carácter nulo
+    char caracter = 0;
+    int intentos = 0;
+
+    // Terminal no bloqueante inicial
+    tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
+    t_new = t_old;
+    t_new.c_lflag &= ~(ECHO | ICANON); // anula entrada canónica y eco
+    t_new.c_cc[VMIN] = 1;              // setea el minimo numero de caracteres que espera read()
+    t_new.c_cc[VTIME] = 0;             // setea tiempo maximo de espera de caracteres que lee read()
+    tcsetattr(FD_STDIN, TCSANOW, &t_new);
+
+    system("clear");
+
+    while (intentos < MAX_INTENTOS) {
+        int i = 0;
+
+        printf("\nPassword: ");
+
+        while (caracter != 10) { // Mientras no se presione ENTER
+            caracter = getchar();
+
+            if (caracter == 127) { // Si se presiona BACKSPACE
+                if (i > 0) {
+                    printf("\b \b"); // Borra un asterisco de la pantalla
+                    i--;
+                }
+            } else if (caracter != 10) { // Si no se presiona ENTER
+                if (i < LONGITUD_CONTRASENA) {
+                    contrasenaIngresada[i] = caracter;
+                    putchar('*'); // Muestra un asterisco en lugar del carácter
+                    i++;
+                }
+            }
+        }
+        contrasenaIngresada[i] = '\0'; // Agrega el carácter nulo al final de la cadena
+
+        if (strcmp(contrasenaIngresada, CONTRASENA) == 0) {
+            printf("\nPassword correcta!\n");
+            return 'A'; // Contraseña correcta
+        } else {
+            printf("\nPassword incorrecta\n");
+            intentos++;
+        }
+        caracter = 0;
+    }
+    if (intentos == MAX_INTENTOS) {
+        printf("Demasiados intentos fallidos. El programa se aborta.\n");
+    }
+    system("clear");
+    tcsetattr(FD_STDIN, TCSANOW, &t_old); // lee atributos del teclado
+
+    return 'D'; // Contraseña incorrecta o demasiados intentos
+}
+
+// menu principal
+char printMenu(void)
+{
+    system("clear");
+    puts("-----------------------------------------\n");
+    puts("          MENU PRINCIPAL\n");
+    puts("-----------------------------------------\n");
+    puts("(1)\t\t Modo Local");
+    puts("(2)\t\t Modo remoto");
+    puts("(3)\t\t Setear velocidad inicial");
+    puts("(4)\t\t Testeo de leds");
+    puts("(5)\t\t Salir");
+
+    char choice;
+    do{
+        read(FD_STDIN, &choice, 1);
+        choice -= 48;
+    } while (choice < 1 || choice > 5);
+    
+    system("clear");
+  
+    return choice;
+}
+
+int seteoVelocidad(void){
+  int velocidad_inicial = 1;
+  unsigned int velocidad;
+
+  system("clear");
+  
+  puts("-------------------------------------\n");
+  puts("Seteo de velocidad de las secuencias\n");
+  puts("-------------------------------------\n");
+
+  while (aux != '\n'){
+      velocidad = analogRead(A0);
+
+      if ((velocidad != delays) || velocidad_inicial){
+          system("clear");
+          printf("\nVelocidad Inicial (Enter para setear)");
+          velocidad = 1 + (valorADC * 9 / 255);
+          
+          printf("\nVelocidad Inicial: %d ms\n", velocidad);
+          velocidad_inicial = 0;
+      }
+      read(FD_STDIN, &aux, 1);
+  }
+  aux = 'E';
+  
+  system(clear);
+  
+  return velocidad;
+}
 // menuSecuencia: Función para el menú de selección de secuencia
 // Valor de retorno: Entero que representa la opción elegida
 char printSecuencia(void)
@@ -40,18 +148,18 @@ char printSecuencia(void)
 
     system("clear");
 
-	printf("-----------------------------------------\n");
-	printf("               SECUENCIAS \n");
-	printf("-----------------------------------------\n");
-	printf("(1) El auto fantastico\n");
-	printf("(2) El choque\n");
-	printf("(3) La apilada\n");
-	printf("(4) La carrera\n");
-	printf("(5) Voy 2 vuelvo 1\n");
-	printf("(6) Juntos a la par\n");
-	printf("(7) Carga\n");
-	printf("(8) Brincos largos\n");
-	printf("(9) Volver a menu principal\n");
+    puts("-----------------------------------------\n");
+    puts("               SECUENCIAS \n");
+    puts("-----------------------------------------\n");
+    puts("(1)\t\t El auto fantastico");
+    puts("(2)\t\t El choque");
+    puts("(3)\t\t La apilada");
+    puts("(4)\t\t La carrera");
+    puts("(5)\t\t Voy 2 vuelvo 1");
+    puts("(6)\t\t Juntos a la par");
+    puts("(7)\t\t Carga");
+    puts("(8)\t\t Brincos largos");
+    puts("(9)\t\t Volver a menu principal");
   
     opcion = getchar();
 
@@ -61,6 +169,21 @@ char printSecuencia(void)
     return opcion;
 }
 
+// cambiarPausa: Modifica la velocidad de las secuencias
+int cambiarPausa(void)
+{
+    switch (aux)
+    {
+        case 'A': // ARROW UP
+             return -1;
+
+        case 'B': // ARROW DOWN
+             return 1;
+
+        default:
+             return 0; // OTHER
+    }
+}
   
 void lecturaLocal(void){
   int n = 0;
@@ -83,6 +206,21 @@ void lecturaLocal(void){
     usleep(500);
       n++;
   }
+}
+  
+void controlVeloc(int fd, char modo) {
+    int modificacion, resultado;
+
+    if(modo == 'L')
+      lecturaLocal();
+    else if(modo == 'R'){
+      if(serialDataAvail(fd))
+        aux = serialGetchar(fd);
+    }
+    modificacion = cambiarPausa();
+    resultado = pausa + modificacion;
+
+    pausa = (resultado < MIN_VELOCIDAD) ? MIN_VELOCIDAD : (resultado > MAX_VELOCIDAD) ? MAX_VELOCIDAD : resultado;
 }
 
 #endif

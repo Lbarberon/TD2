@@ -8,12 +8,13 @@
 
 char printSecuencia(void);
 void lecturaLocal(void);
+void config0(void);
 
 char aux = 'E';
-
+struct termios t_old, t_new, t_new1;
+    
 int main(void) {
     int fd;
-    struct termios oldtty, newtty;
     char opcion;
 
     // Apertura del puerto serie
@@ -24,7 +25,7 @@ int main(void) {
     }
 
     // Configuracion del TTY
-    if (termset(fd, 9600, &oldtty, &newtty) == -1) {
+    if (termset(fd, 9600, &t_old, &t_new) == -1) {
         printf("ERROR: No se pudo configurar el TTY.\n");
         return 1;
     }

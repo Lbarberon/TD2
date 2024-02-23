@@ -4,16 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <wiringPi.h>
-#include <wiringSerial.h>
 #include <termios.h>
-
-#define FD_STDIN 0
-#define MAX_INTENTOS 3
-#define LONGITUD_CONTRASENA 5
-#define CONTRASENA "12345"
-#define MAX_VELOCIDAD 10
-#define MIN_VELOCIDAD 0 
 
 extern struct termios t_old, t_new, t_new1;
 

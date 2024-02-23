@@ -23,11 +23,12 @@ extern char aux;
 void config0(void){
   tcgetattr(FD_STDIN, &t_old); // lee atributos del teclado
   
-  t_new1 = t_old;
+  t_new = t_old;
   t_new.c_lflag &= ~(ECHO | ICANON); // anula entrada canónica y eco
   t_new.c_cc[VMIN] = 1;              // setea el minimo numero de caracteres que espera read()
   t_new.c_cc[VTIME] = 0;             // setea tiempo maximo de espera de caracteres que lee read()
-  
+
+  t_new1 = t_new;
   t_new1.c_cc[VMIN]=0;			//setea el minimo numero de caracteres que espera read()
 }
 

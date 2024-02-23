@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <termios.h>
 
+#define FD_STDIN 0
+
 extern struct termios t_old, t_new, t_new1;
 
 extern int pausa;

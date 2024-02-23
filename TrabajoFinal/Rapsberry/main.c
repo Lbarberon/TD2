@@ -17,7 +17,7 @@ char aux = 'E';
 int pausa = 5;
 
 //Declaracion de pines de salida -- Modificar a los pines de placa	
-int vecOutput[8] = {4, 5, 6, 26,  27, 28, 29, 25};
+int vecOutput[8] = {4, 5, 6, 26,  27, 28, 29, 25}; // Placa RP1 en lab
 
 //Declaracion de tablas de secuencias de luces
 unsigned char LaCarrera[] = {0x80, 0x80, 0x40, 0x40, 0x20, 0x20, 0x10, 0x10, 0x88, 0x48, 0x24, 0x14, 0x0A, 0x06, 0x03, 0x01, 0x00};
@@ -38,7 +38,7 @@ void controlVeloc(int , char );
 void Secuencias(int , unsigned char * , int , char);
 void Mod(int , char );
 void Carga(int , char);
-void VoyDosVuelvoUno(int , char );
+void BrincosLargos(int , char );
 void apagarLeds(void);
 void config0(void);
 void lectura(void);
@@ -166,7 +166,7 @@ void Mod(int fd, char modo)
       case '8': printf("Brincos largos (Enter para Salir)");
                 fflush(stdout);
                 tcsetattr(FD_STDIN, TCSANOW, &t_new1);
-                VoyDosVuelvoUno(fd, modo);
+                BrincosLargos(fd, modo);
                 break;
 
       case '9': break;
@@ -225,7 +225,7 @@ void Carga(int fd, char modo)
   }
 }
 
-void VoyDosVuelvoUno(int fd, char modo)
+void BrincosLargos(int fd, char modo)
 {
    while(1){
     digitalWrite(vecOutput[0], 1);

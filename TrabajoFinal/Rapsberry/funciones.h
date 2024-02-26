@@ -189,7 +189,7 @@ void lecturaLocal(void){ // Obtiene la tecla ingresada
     if(ingreso[0] == '\n') // Enter
           aux = '\n';
 
-    usleep(500);
+    usleep(1000);
     n++;
   }
 }
@@ -200,10 +200,12 @@ void controlVeloc(int fd, char modo) // Obtiene el valor de pausa
 
     if(modo == 'L')
       lecturaLocal();
-    else if(modo == 'R'){
-      if(serialDataAvail(fd))
-        aux = serialGetchar(fd);
-    }
+    else
+      while(aux == 'E'){
+        if(serialDataAvail(fd))
+          aux = serialGetchar(fd);
+      }
+
     modificacion = cambiarPausa();
     resultado = pausa + modificacion;
 

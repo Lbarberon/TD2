@@ -1,12 +1,12 @@
+#ifndef _FUNCIONES
+#define _FUNCIONES
+
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <wiringPi.h>
 #include <wiringSerial.h>
 #include <termios.h>
-
-#ifndef _FUNCIONES
-#define _FUNCIONES
 
 #define FD_STDIN 0
 #define MAX_INTENTOS 3

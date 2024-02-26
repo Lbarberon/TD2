@@ -110,15 +110,15 @@ void Mod(int fd, char modo)
   while(opcion != '9'){
     if(modo == 'L')
       opcion = printSecuencia();
-    else if(modo == 'R'){
-      while(opcion == 'A'){
-        if(serialDataAvail(fd))
-          opcion = serialGetchar(fd);
+    else 
+	while(opcion == 'A'){
+        	if(serialDataAvail(fd))
+          		opcion = serialGetchar(fd);
         }
     }      
     aux = 'E';
 
-    tcsetattr (0 , TCSANOW , &t_new);
+    tcsetattr (0 , TCSANOW , &t_new1);
 
     switch(opcion){
       case '1': longitud = sizeof(AutoFantastico);

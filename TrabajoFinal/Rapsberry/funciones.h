@@ -12,7 +12,7 @@
 #define MAX_INTENTOS 3
 #define LONGITUD_CONTRASENA 5
 #define CONTRASENA "12345"
-#define MAX_VELOCIDAD 1000
+#define MAX_VELOCIDAD 4
 #define MIN_VELOCIDAD 0 
 
 struct termios t_old, t_new, t_new1;
@@ -104,8 +104,8 @@ char printMenu(void) //Menu principal
 }
 
 int seteoVelocidad(void){
-  int velocidad_inicial = 5;
-  unsigned int velocidad, valorADC;
+  int velocidad_inicial = 2;
+  unsigned int veloc, valorADC;
 
   system("clear");
   tcsetattr(FD_STDIN, TCSANOW, &t_new);
@@ -116,12 +116,12 @@ int seteoVelocidad(void){
 
   while (aux != '\n'){
       valorADC = analogRead(0);
-      if ((velocidad != pausa) || velocidad_inicial){
+      if ((veloc != pausa) || velocidad_inicial){
           system("clear");
           printf("\nVelocidad Inicial (Enter para setear)");
-          velocidad = 1 + (valorADC * 9 / 255);
+          veloc = valorADC * 4 / 255;
 
-          printf("\nVelocidad Inicial: %d ms\n", velocidad);
+          printf("\nVelocidad Inicial: %d ms\n", veloc);
           velocidad_inicial = 0;
       }
       read(FD_STDIN, &aux, 1);
@@ -129,7 +129,7 @@ int seteoVelocidad(void){
   system("clear");
   tcsetattr(FD_STDIN, TCSANOW, &t_old);
 
-  return velocidad;
+  return veloc;
 }
 
 char printSecuencia(void)
@@ -163,9 +163,9 @@ int cambiarPausa(void) // Modifica la velocidad de las secuencias
     switch (aux)
     {
         case 'A': // ARROW UP
-             return -100;
+             return 1;
         case 'B': // ARROW DOWN
-             return 100;
+             return -1;
         default:
              return 0; // OTHER
     }
@@ -196,20 +196,21 @@ void lecturaLocal(void){ // Obtiene la tecla ingresada
 
 void controlVeloc(int fd, char modo) // Obtiene el valor de pausa
 {
-    int modificacion, resultado;
+    int modificacion, resultado, n = 0;
 
     if(modo == 'L')
       lecturaLocal();
     else
-      while(aux == 'E'){
+      while(n < 1000){
         if(serialDataAvail(fd))
-          aux = serialGetchar(fd);
+            aux = serialGetchar(fd);
+        usleep(1000);
+        n++;
       }
-
     modificacion = cambiarPausa();
-    resultado = pausa + modificacion;
+    resultado = ind_veloc + modificacion;
 
-    pausa = (resultado < MIN_VELOCIDAD) ? MIN_VELOCIDAD : (resultado > MAX_VELOCIDAD) ? MAX_VELOCIDAD : resultado;
+    ind_veloc = (resultado < MIN_VELOCIDAD) ? MIN_VELOCIDAD : (resultado > MAX_VELOCIDAD) ? MAX_VELOCIDAD : resultado;
 }
 
 #endif

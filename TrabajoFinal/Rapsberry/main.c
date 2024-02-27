@@ -14,7 +14,8 @@
 #define A0 BASE + 0
 
 char aux = 'E';
-int pausa = 5;
+int ind_veloc = 2;
+unsigned int velocidad[] = {10000, 100000, 1000000, 10000000, 100000000};
 
 //Declaracion de pines de salida -- Modificar a los pines de placa	
 int vecOutput[8] = {4, 5, 6, 26,  27, 28, 29, 25}; // Placa RP1 en lab
@@ -48,7 +49,7 @@ extern void retardo(unsigned long int Op);
 int main(void){
   char opcion = 'A';
   int fd;
-
+  
   // Inicializa la configuracion de WiringPi
   if(wiringPiSetup() == -1) {
     printf("No se puede iniciar WiringPi\n");
@@ -78,19 +79,19 @@ int main(void){
                   Mod(fd, 'R'); 
                   serialClose(fd);
                   break;
-        case '3': pausa = seteoVelocidad();  
+        case '3': ind_veloc = seteoVelocidad();  
                   break;
         case '4': for(int i = 0; i < 3; i++){
                     for(int j = 0;j< 8; j++)
                       digitalWrite(vecOutput[j], 1);
-                    
-                    retardo(pausa*100000000);
+
+                    retardo(velocidad[ind_veloc]);
                     apagarLeds();
-                    retardo(pausa*100000000);
-                    
+                    retardo(velocidad[ind_veloc]);
+
                   }
                   break;
-  	case '5': break;
+    case '5': break;
         default:  printf("Ingresar opcion valida");
                   break;
       } 
@@ -111,9 +112,9 @@ void Mod(int fd, char modo)
     if(modo == 'L')
       opcion = printSecuencia();
     else 
-	while(opcion == 'A'){
-        	if(serialDataAvail(fd))
-          		opcion = serialGetchar(fd);
+  while(opcion == 'A'){
+          if(serialDataAvail(fd))
+              opcion = serialGetchar(fd);
         }
     }      
     aux = 'E';
@@ -124,7 +125,7 @@ void Mod(int fd, char modo)
       case '1': longitud = sizeof(AutoFantastico);
                 printf("Auto Fantastico (Enter para Salir)");
                 fflush(stdout);
-		Secuencias(fd, AutoFantastico, longitud, modo);
+    Secuencias(fd, AutoFantastico, longitud, modo);
                 break;
 
       case '2': longitud = sizeof(ElChoque);
@@ -187,7 +188,7 @@ void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
 {       
           const unsigned char constante = 0x01;
           unsigned char resultado = 0;
-  
+
           tcsetattr(FD_STDIN, TCSANOW, &t_new1);
           while(1){
               for(int j = 0 ; j < longitud ; j++){
@@ -195,18 +196,18 @@ void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
                 if(aux == '\n') //Enter
                     break;
                 aux = 'E';
-  
+
                  for(int offset = 0 ; offset < 8 ; offset++){
                     resultado = constante & (Secuencia[j] >> offset);
                     (resultado) ? digitalWrite(vecOutput[offset], 1) : digitalWrite(vecOutput[offset], 0);
                  }       
-                 retardo(pausa*1000000);
+                 retardo(velocidad[ind_veloc]);
               }
               if(aux == '\n')
                 break;
           }
 }
-  
+
 void Carga(int fd, char modo)
 {
   while(1){
@@ -217,7 +218,7 @@ void Carga(int fd, char modo)
       aux = 'E';
 
       digitalWrite(vecOutput[i], 1);
-      retardo(pausa*1000000);
+      retardo(velocidad[ind_veloc]);
     }
     apagarLeds();
     if(aux == '\n')
@@ -229,7 +230,8 @@ void BrincosLargos(int fd, char modo)
 {
    while(1){
     digitalWrite(vecOutput[0], 1);
-    retardo(pausa*1000000);
+    retardo(velocidad[ind_veloc]);
+     
     digitalWrite(vecOutput[0], 0);
 
     for(int i = 0; i < 8; i++){
@@ -240,11 +242,13 @@ void BrincosLargos(int fd, char modo)
 
       if((i % 2) == 0){
         digitalWrite(vecOutput[i], 1);
-        retardo(pausa*1000000);
+        retardo(velocidad[ind_veloc]);
+        
         digitalWrite(vecOutput[i], 0);
       }else{
         digitalWrite(vecOutput[i + 4], 1);
-        retardo(pausa*1000000);
+        retardo(velocidad[ind_veloc]);
+        
         digitalWrite(vecOutput[i + 4], 0);
       }
     }

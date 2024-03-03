@@ -7,8 +7,11 @@
 #include <wiringPi.h>
 #include <wiringSerial.h>
 #include <termios.h>
+#include <pcf8591.h>
 
 #define FD_STDIN 0
+#define BASE 64
+#define A2 BASE+2
 #define MAX_INTENTOS 3
 #define LONGITUD_CONTRASENA 5
 #define CONTRASENA "12345"
@@ -17,7 +20,7 @@
 
 struct termios t_old, t_new, t_new1;
 
-extern int pausa;
+extern int ind_veloc;
 extern char aux;
 
 void config0(void) // Obtiene configuraciones
@@ -104,27 +107,25 @@ char printMenu(void) //Menu principal
 }
 
 int seteoVelocidad(void){
-  int velocidad_inicial = 2;
   unsigned int veloc, valorADC;
 
   system("clear");
-  tcsetattr(FD_STDIN, TCSANOW, &t_new);
+  tcsetattr(FD_STDIN, TCSANOW, &t_new1);
 
   puts("-------------------------------------\n");
   puts("Seteo de velocidad de las secuencias\n");
   puts("-------------------------------------\n");
 
   while (aux != '\n'){
-      valorADC = analogRead(0);
-      if ((veloc != pausa) || velocidad_inicial){
-          system("clear");
-          printf("\nVelocidad Inicial (Enter para setear)");
-          veloc = valorADC * 4 / 255;
+      valorADC = analogRead(A2);
+      system("clear");
+      printf("\nVelocidad Inicial (Enter para setear)");
+      veloc = (int) valorADC * 4 / 255;
 
-          printf("\nVelocidad Inicial: %d ms\n", veloc);
-          velocidad_inicial = 0;
-      }
+      printf("\nVelocidad Inicial: %d ms\n", veloc);
+            
       read(FD_STDIN, &aux, 1);
+      sleep(1);
   }
   system("clear");
   tcsetattr(FD_STDIN, TCSANOW, &t_old);
@@ -163,9 +164,9 @@ int cambiarPausa(void) // Modifica la velocidad de las secuencias
     switch (aux)
     {
         case 'A': // ARROW UP
-             return 1;
-        case 'B': // ARROW DOWN
              return -1;
+        case 'B': // ARROW DOWN
+             return +1;
         default:
              return 0; // OTHER
     }

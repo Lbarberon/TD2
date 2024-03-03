@@ -4,18 +4,17 @@
 #include <termios.h>
 #include <string.h>
 #include <unistd.h>
-#include <pcf8591.h>
 #include "funciones.h"
+#include <pcf8591.h>
 
 //Constantes importantes
 #define AD_BASE 120
 #define Address 0x48
 #define BASE 64
-#define A0 BASE + 0
 
 char aux = 'E';
 int ind_veloc = 2;
-unsigned int velocidad[] = {10000, 100000, 1000000, 10000000, 100000000};
+unsigned int velocidad[] = {1, 10, 1000, 800000, 1000000000};
 
 //Declaracion de pines de salida -- Modificar a los pines de placa	
 int vecOutput[8] = {4, 5, 6, 26,  27, 28, 29, 25}; // Placa RP1 en lab
@@ -79,23 +78,24 @@ int main(void){
                   Mod(fd, 'R'); 
                   serialClose(fd);
                   break;
-        case '3': ind_veloc = seteoVelocidad();  
+	case '3': ind_veloc = seteoVelocidad();  
                   break;
         case '4': for(int i = 0; i < 3; i++){
                     for(int j = 0;j< 8; j++)
                       digitalWrite(vecOutput[j], 1);
 
-                    retardo(velocidad[ind_veloc]);
+                    sleep(1);
                     apagarLeds();
-                    retardo(velocidad[ind_veloc]);
+                    sleep(1);
 
                   }
                   break;
-    case '5': break;
+	case '5': break;
         default:  printf("Ingresar opcion valida");
                   break;
-      } 
-  }
+      }
+     aux = 'E'; 
+    }
   system("clear");
   printf("\nEl programa ha finalizado\n");
   tcsetattr (0 , TCSANOW , &t_old);
@@ -106,17 +106,18 @@ int main(void){
 void Mod(int fd, char modo)
 {
   int longitud;
-  char opcion = 'A';
+  char opcion;
 
-  while(opcion != '9'){
-    if(modo == 'L')
-      opcion = printSecuencia();
-    else 
-  while(opcion == 'A'){
-          if(serialDataAvail(fd))
-              opcion = serialGetchar(fd);
-        }
-    }      
+    while(opcion != '9'){
+	opcion = 'A';
+    	if(modo == 'L')
+      		opcion = printSecuencia();
+    	else 
+	  	while(opcion == 'A'){
+          		if(serialDataAvail(fd))
+              			opcion = serialGetchar(fd);
+          }
+          
     aux = 'E';
 
     tcsetattr (0 , TCSANOW , &t_new1);
@@ -125,7 +126,7 @@ void Mod(int fd, char modo)
       case '1': longitud = sizeof(AutoFantastico);
                 printf("Auto Fantastico (Enter para Salir)");
                 fflush(stdout);
-    Secuencias(fd, AutoFantastico, longitud, modo);
+		Secuencias(fd, AutoFantastico, longitud, modo);
                 break;
 
       case '2': longitud = sizeof(ElChoque);
@@ -174,15 +175,15 @@ void Mod(int fd, char modo)
 
       default:  printf("%d no es una opcion valida", opcion);
                 fflush(stdout);
-                retardo(pausa*100000);
+                retardo(velocidad[ind_veloc]);
                 break;
     }
     printf("\n");
     apagarLeds();
-
-    tcsetattr(0 , TCSANOW , &t_old);
-  }
 }
+    tcsetattr(0 , TCSANOW , &t_old);
+}
+
 
 void Secuencias(int fd, unsigned char *Secuencia, int longitud, char modo)
 {       
@@ -262,3 +263,4 @@ void apagarLeds(void)
     for(int i =0; i < 8; i++)
       digitalWrite(vecOutput[i], 0);
 }
+
